@@ -52,7 +52,7 @@ void loop() {
 		received_command = Serial.read(); // read the incoming data
 		switch(received_command){
 			case REQUEST_DISTANCE: {
-				Serial.println("DISTANCE REQUESTED");
+				//Serial.println("DISTANCE REQUESTED");
 				Serial.println(read_distance());
 				break;
 			}
