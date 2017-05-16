@@ -8,7 +8,9 @@ const unsigned char DISTANCE_TRIG_PIN = 2;
 
 const unsigned char DISTANCE_ECHO_PIN = 4;
 
-enum Command { REQUEST_DISTANCE = 1, SET_MOTORS };
+enum Command { START, REQUEST_DISTANCE, SET_MOTORS };
+
+unsigned char received_command = 0;
 
 long microsecondsToCentimeters(long duration){
 	return duration/29/2;
@@ -43,12 +45,16 @@ void setup() {
 	pinMode(DISTANCE_ECHO_PIN, INPUT);
 
 	Serial.begin(9600); // set the baud rate
-	Serial.println("Ready"); // print "Ready" once
+	//Serial.println("Ready"); // print "Ready" once
+	while(Serial.available()==0);
+	received_command = Serial.read();
+	if(received_command == START){
+		Serial.println("Ready");
+	}
 }
 
 void loop() {
-	unsigned char received_command = 0;
-	if(Serial.available()){ // only send data back if data has been sent
+		if(Serial.available()){ // only send data back if data has been sent
 		received_command = Serial.read(); // read the incoming data
 		switch(received_command){
 			case REQUEST_DISTANCE: {

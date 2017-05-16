@@ -3,6 +3,8 @@ import time
 import threading
 
 
+START = 0
+
 ser = serial.Serial('/dev/ttyACM0', 9600)
 
 counter = 0
@@ -35,6 +37,11 @@ class Motors(object):
 	COMMAND = 1 
 
 distance_thread = DistanceSensor()
+
+send_command(START)
+receive_data()
+#receive_data()
+
 distance_thread.start()
 
 distance_thread.join()
