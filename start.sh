@@ -5,6 +5,8 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+./upload.sh
+
 cd Pi
 sudo python main.py
 cd ..
