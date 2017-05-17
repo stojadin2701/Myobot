@@ -86,6 +86,44 @@ class Motors(object):
 		Motors.go(80, -80, duration)
 		
 
+class _Getch:
+    """Gets a single character from standard input.  Does not echo to the
+screen."""
+    def __init__(self):
+        try:
+            self.impl = _GetchWindows()
+        except ImportError:
+            self.impl = _GetchUnix()
+
+    def __call__(self): return self.impl()
+
+
+class _GetchUnix:
+    def __init__(self):
+        import tty, sys
+
+    def __call__(self):
+        import sys, tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+
+class _GetchWindows:
+    def __init__(self):
+        import msvcrt
+
+    def __call__(self):
+        import msvcrt
+        return msvcrt.getch()
+
+
+getch = _Getch()
 
 
 distance_thread = DistanceSensor()
@@ -96,10 +134,26 @@ CommProtocol.send(START)
 
 print(CommProtocol.receive())
 
-distance_thread.start()
+#distance_thread.start()
 
 try:
-	Motors.go_forward(1);
+	getch = _Getch()
+	while True:
+		direction = getch.impl()
+		print(direction)
+		if(direction == 'w'):
+			Motors.go_forward(1)
+		elif(direction == 's'):
+			Motors.go_backward(1)
+		elif(direction == 'a'):
+			Motors.turn_left(1)
+		elif(direction == 'd'):
+			Motors.turn_right(1)	
+		else:
+			break
+
+
+#	Motors.go_forward(1);
 #	Motors.go_backward(1);
 #	Motors.turn_left(1);
 #	Motors.turn_right(1);	
@@ -121,5 +175,5 @@ except Exception as err:
 	print (err)
 
 
-distance_thread.join()
+#distance_thread.join()
 
