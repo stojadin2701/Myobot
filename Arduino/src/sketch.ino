@@ -82,6 +82,7 @@ void setup() {
 }
 
 void loop() {
+//	delay(100);
 	if(Serial.available()){ 
 		received_command = Serial.read(); // read the incoming data
 		switch(received_command){
