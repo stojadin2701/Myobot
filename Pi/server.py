@@ -2,6 +2,9 @@ import io
 import picamera
 import logging
 import socketserver
+
+import shared
+
 from threading import Condition
 from http import server
 
@@ -28,7 +31,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 length = int(self.headers['content-length'])
                 data_string = self.rfile.read(length)
                 try:
-                        result = data_string.decode('utf-8') + ' :D'
+                        result = data_string.decode('utf-8')
+                        print(result)
                 except:
                         result = 'error'
                 self.wfile.write(bytes(result, 'UTF-8'))
@@ -39,7 +43,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                         self.send_header('Location', '/index.html')
                         self.end_headers()
                 elif self.path == '/index.html':
-                        content = index.encode('utf-8')
+                        content = shared.index.encode('utf-8')
                         self.send_response(200)
                         self.send_header('content-type', 'text/html')
                         self.send_header('content-length', len(content))
@@ -54,9 +58,9 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                         self.end_headers()
                         try:
                                 while True:
-                                        with output.condition:
-                                                output.condition.wait()
-                                                frame = output.frame
+                                        with shared.output.condition:
+                                                shared.output.condition.wait()
+                                                frame = shared.output.frame
                                         self.wfile.write(b'--FRAME\r\n')
                                         self.send_header('Content-Type', 'image/jpeg')
                                         self.send_header('Content-Length', len(frame))
@@ -69,14 +73,14 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                                         self.client_address, str(e))
 
                 elif self.path == '/myo.js':
-                        content = myo.encode('utf-8')
+                        content = shared.myo.encode('utf-8')
                         self.send_response(200)
                         self.send_header('content-type', 'application/javascript')
                         self.send_header('content-length', len(content))
                         self.end_headers()
                         self.wfile.write(content)
                 elif self.path == '/myscript.js':
-                        content = myscript.encode('utf-8')
+                        content = shared.myscript.encode('utf-8')
                         self.send_response(200)
                         self.send_header('content-type', 'application/javascript')
                         self.send_header('content-length', len(content))
@@ -89,21 +93,4 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
 class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
         allow_reuse_address = True
         daemon_threads = True
-
-with picamera.PiCamera(resolution='1240x720', framerate=24) as camera:
-        output = StreamingOutput()
-        camera.start_recording(output, format='mjpeg')
-        with io.open('index.html', 'r') as f:
-                index = f.read()
-        with io.open('myo.js', 'r') as f:
-                myo = f.read()
-        with io.open('myscript.js', 'r') as f:
-                myscript = f.read()
-
-        try:
-                address = ('', 8080)
-                server = StreamingServer(address, StreamingHandler)
-                server.serve_forever()
-        finally:
-                camera.stop_recording()
 

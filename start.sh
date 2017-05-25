@@ -8,5 +8,5 @@ fi
 ./upload.sh
 
 cd Pi
-sudo python main.py
+sudo python3 main.py
 cd ..

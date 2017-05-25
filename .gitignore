@@ -1,3 +1,3 @@
 Arduino/.build/*
-Pi/*.pyc
-Pi/web/*.pyc
+*.pyc
+Pi/__pycache__

@@ -7,9 +7,9 @@ class Communicator(object):
 		self.ser = serial.Serial(port, baud_rate)
 
 	def send(self, data):
-		self.ser.write(str(chr(data)))
+		self.ser.write(bytes(str(chr(data)),'UTF-8'))
 	
 	def receive(self):
-		return self.ser.readline()
+		return self.ser.readline().decode('UTF-8')
 
 
