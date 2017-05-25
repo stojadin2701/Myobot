@@ -1,3 +1,16 @@
+var command_map = { 
+    'fingers_spread':1,
+    'wave_in':2,
+    'wave_out':3,
+    'fist':4,
+    'double_tap':5,
+    'fingers_spread_off':6,
+    'wave_in_off':7,
+    'wave_out_off':8,
+    'fist_off':9,
+    'double_tap_off':10
+}
+
 
 function xml_http_post(url, data, callback) {
 	var req = false;
@@ -31,7 +44,7 @@ function xml_http_post(url, data, callback) {
 
 function test_handle(req) {
 	var elem = document.getElementById('pose')
-		elem.innerHTML =  req.responseText
+		elem.firstChild.data =  req.responseText
 }
 
 
@@ -39,30 +52,32 @@ function test_handle(req) {
 Myo.connect('test.test.test');
 
 Myo.on('connected', function(data, timestamp){
-	console.log("Myo successfully connected. Data: " + JSON.stringify(data) + ". Timestamp: " + timestamp + ".");
+    console.log("Myo successfully connected. Data: " + JSON.stringify(data) + ". Timestamp: " + timestamp + ".");
     xml_http_post("index.html", 'Armband connected', test_handle);
+    Myo.setLockingPolicy("none");
 })
 
+Myo.on('disconnected', function(){
+    console.log("Myo disconnected.");
+    xml_http_post("index.html", 'Armband disconnected', test_handle);
+})
 
-//Whenever we get a pose event, we'll update the image sources with the active version of the image
 Myo.on('pose', function(pose){
 	console.log(pose);
-	xml_http_post("index.html", pose, test_handle);
+	xml_http_post("index.html", command_map[pose], test_handle);
 })
 
-//Opposite of above. We also revert the main img to the unlocked state
 Myo.on('pose_off', function(pose){
 	console.log('kraj poze' + pose);
-    xml_http_post("index.html", pose, test_handle);
+    xml_http_post("index.html", command_map[pose + '_off'], test_handle);
 });
 
-
-//Whenever a myo locks we'll switch the main image to a lock image
 Myo.on('locked', function(){
 	console.log('zakljucan myo');
+    xml_http_post("index.html", 'Armband locked', test_handle);
 });
 
-//Whenever a myo unlocks we'll switch the main image to a unlock image
 Myo.on('unlocked', function(){
 	console.log('otkljucan myo');
+    xml_http_post("index.html", 'Armband unlocked', test_handle);
 });

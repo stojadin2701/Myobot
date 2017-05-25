@@ -8,6 +8,34 @@ import shared
 from threading import Condition
 from http import server
 
+from motors import Motors
+
+FINGERS_SPREAD='1'
+WAVE_IN='2'
+WAVE_OUT='3'
+FIST='4'
+DOUBLE_TAP='5'
+
+FINGERS_SPREAD_OFF='6'
+WAVE_IN_OFF='7'
+WAVE_OUT_OFF='8'
+FIST_OFF='9'
+DOUBLE_TAP_OFF='10'
+
+
+
+command_dict = {
+        FINGERS_SPREAD: Motors.go_forward_forever,
+        WAVE_IN: Motors.turn_left_forever,
+        WAVE_OUT: Motors.turn_right_forever,
+        FIST: Motors.go_backward_forever,
+        DOUBLE_TAP: Motors.stop_forever,
+        FINGERS_SPREAD_OFF: Motors.stop_forever,
+        WAVE_IN_OFF: Motors.stop_forever,
+        WAVE_OUT_OFF: Motors.stop_forever,
+        FIST_OFF: Motors.stop_forever,
+        DOUBLE_TAP_OFF: Motors.stop_forever
+}
 
 class StreamingOutput(object):
         def __init__(self):
@@ -32,10 +60,12 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 data_string = self.rfile.read(length)
                 try:
                         result = data_string.decode('utf-8')
+                        #command_dict[result]()
                         print(result)
-                except:
+                except Exception as e:
+                        print(e)
                         result = 'error'
-                self.wfile.write(bytes(result, 'UTF-8'))
+                self.wfile.write(bytes(result, 'utf-8'))
 
          def do_GET(self):
                 if self.path == '/':
