@@ -1,4 +1,4 @@
-var command_map = { 
+/*var command_map = { 
     'fingers_spread':1,
     'wave_in':2,
     'wave_out':3,
@@ -10,7 +10,7 @@ var command_map = {
     'fist_off':9,
     'double_tap_off':10
 }
-
+*/
 
 function xml_http_post(url, data, callback) {
 	var req = false;
@@ -44,10 +44,18 @@ function xml_http_post(url, data, callback) {
 
 function test_handle(req) {
 	var elem = document.getElementById('pose')
-		elem.firstChild.data =  req.responseText
+		elem.innerHtml =  req.responseText
 }
 
+$('#start_stream').on('click', function(event) {
+    console.log("Start stream clicked...")
+    xml_http_post("index.html", 'Start stream', test_handle);
+});
 
+$('#stop_stream').on('click', function(event) {
+    console.log("Stop stream clicked...")
+    xml_http_post("index.html", 'Stop stream', test_handle);
+});
 
 Myo.connect('test.test.test');
 
@@ -64,12 +72,12 @@ Myo.on('disconnected', function(){
 
 Myo.on('pose', function(pose){
 	console.log(pose);
-	xml_http_post("index.html", command_map[pose], test_handle);
+	xml_http_post("index.html", pose, test_handle);
 })
 
 Myo.on('pose_off', function(pose){
 	console.log('kraj poze' + pose);
-    xml_http_post("index.html", command_map[pose + '_off'], test_handle);
+    xml_http_post("index.html", pose + '_off', test_handle);
 });
 
 Myo.on('locked', function(){

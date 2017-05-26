@@ -1,7 +1,6 @@
 import io
 import time
 import threading
-import picamera
 
 import shared
 
@@ -44,19 +43,15 @@ try:
             break
     """
 
-    with picamera.PiCamera(resolution='1240x720', framerate=24) as camera:
+    with shared.camera:
         shared.output = StreamingOutput()
-        camera.hflip = True
-        camera.vflip = True
-        camera.start_recording(shared.output, format='mjpeg')
         try:
                 address = ('', 8080)
                 server = StreamingServer(address, StreamingHandler)
                 server.serve_forever()
-        finally:
-                camera.stop_recording()
+        except Exception as err:
+            print(err)
 
-    
 except Exception as err:
     print (err)
 

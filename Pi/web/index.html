@@ -3,7 +3,7 @@
 	<head>
         <meta charset="utf-8"/>
     
-        <!-- JQuery -->
+        <!-- jQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     
         <!-- Latest compiled and minified CSS -->
@@ -23,11 +23,28 @@
 	<body>
 		<center>
 			<h1>PiCamera MJPEG Streaming Demo</h1>
-			<p id='pose'>TestTestTest</p>
-			<img src="stream.mjpg" width="1280" height="720" />
+			<p id="pose">TestTestTest</p>
+            <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
+            <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>
             <br/>
-            <button type="button" class="btn btn-primary">Start stream</button>
-            <button type="button" class="btn btn-danger">Stop stream</button>
+            <img id = "camera" src="stream.mjpg" width="1280" height="720" style="display: none;" />
+            <script>
+                $('#start_stream').on('click', function(event) {
+                    $('#start_stream').hide();
+                    $('#camera').show();
+                    $('#stop_stream').show();
+                    console.log("Start stream clicked...")
+                    xml_http_post("index.html", 'start_stream', test_handle);
+                });
+
+                $('#stop_stream').on('click', function(event) {
+                    $('#stop_stream').hide();
+                    $('#camera').hide();
+                    $('#start_stream').show();
+                    console.log("Stop stream clicked...")
+                    xml_http_post("index.html", 'stop_stream', test_handle);
+                });
+            </script>
 		</center>
 	</body>
 </html>

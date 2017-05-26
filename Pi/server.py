@@ -1,5 +1,4 @@
 import io
-import picamera
 import logging
 import socketserver
 
@@ -9,6 +8,9 @@ from threading import Condition
 from http import server
 
 from motors import Motors
+from command_executor import CommandExecutor
+
+"""
 
 FINGERS_SPREAD='1'
 WAVE_IN='2'
@@ -24,6 +26,7 @@ DOUBLE_TAP_OFF='10'
 
 
 
+
 command_dict = {
         FINGERS_SPREAD: Motors.go_forward_forever,
         WAVE_IN: Motors.turn_left_forever,
@@ -36,6 +39,8 @@ command_dict = {
         FIST_OFF: Motors.stop_forever,
         DOUBLE_TAP_OFF: Motors.stop_forever
 }
+
+"""
 
 class StreamingOutput(object):
         def __init__(self):
@@ -60,6 +65,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 data_string = self.rfile.read(length)
                 try:
                         result = data_string.decode('utf-8')
+                        CommandExecutor.interpret(result)
                         #command_dict[result]()
                         print(result)
                 except Exception as e:
@@ -97,6 +103,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                                         self.end_headers()
                                         self.wfile.write(frame)
                                         self.wfile.write(b'\r\n')
+                                        #print('a')
                         except Exception as e:
                                 logging.warning(
                                         'Removed streaming client %s: %s',
