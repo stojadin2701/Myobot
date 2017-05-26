@@ -1,9 +1,12 @@
 import io
-import threading
-import picamera
+
+from threading import RLock
+from configparser import ConfigParser
+from picamera import PiCamera
+from string import Template
 
 from comm_protocol import Communicator
-
+from server import StreamingOutput
 
 def init():
     global lock
@@ -16,19 +19,31 @@ def init():
 
     global output
 
+    global address
+
     global camera
 
-    lock = threading.RLock()
+    global config
+    
+    config = ConfigParser()
+    config.read('config.ini')
+
+    lock = RLock()
     going_forward = False
-    comm = Communicator('/dev/ttyACM0', 9600)
+    comm = Communicator(config.get('arduino', 'port'), config.getint('arduino', 'baud_rate'))
       
-    with io.open('web/index.html', 'r') as f:
-        index = f.read()
-    with io.open('web/myo.js', 'r') as f:
+    with io.open(config.get('web', 'index_location'), 'r') as f:
+        index = Template(f.read()).safe_substitute(dict(img_width=config.get('web', 'img_width'), img_height=config.get('web', 'img_height')))
+
+    with io.open(config.get('web', 'myo_location'), 'r') as f:
         myo = f.read()
-    with io.open('web/myscript.js', 'r') as f:
+    with io.open(config.get('web', 'myscript_location'), 'r') as f:
         myscript = f.read()
 
-    camera = picamera.PiCamera(resolution='1240x720', framerate=24) 
-    camera.hflip = True
-    camera.vflip = True
+    output = StreamingOutput()
+
+    address = ('', config.getint('web', 'port'))
+  
+    camera = PiCamera(resolution = config.get('camera', 'resolution'), framerate = config.getint('camera', 'framerate'))
+    camera.hflip = config.getboolean('camera', 'hflip')
+    camera.vflip = config.getboolean('camera', 'vflip')

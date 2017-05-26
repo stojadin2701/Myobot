@@ -27,7 +27,7 @@
             <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
             <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>
             <br/>
-            <img id = "camera" src="stream.mjpg" width="1280" height="720" style="display: none;" />
+            <img id = "camera" src="stream.mjpg" width="${img_width}" height="${img_height}" style="display: none;" />
             <script>
                 $('#start_stream').on('click', function(event) {
                     $('#start_stream').hide();

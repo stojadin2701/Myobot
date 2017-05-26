@@ -8,7 +8,6 @@ from distance_sensor import DistanceSensor
 from motors import Motors
 from getch import _Getch
 from server import StreamingServer
-from server import StreamingOutput
 from server import StreamingHandler
 
 shared.init()
@@ -44,11 +43,9 @@ try:
     """
 
     with shared.camera:
-        shared.output = StreamingOutput()
         try:
-                address = ('', 8080)
-                server = StreamingServer(address, StreamingHandler)
-                server.serve_forever()
+            server = StreamingServer(shared.address, StreamingHandler)
+            server.serve_forever()
         except Exception as err:
             print(err)
 

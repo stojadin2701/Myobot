@@ -7,7 +7,6 @@ import shared
 from threading import Condition
 from http import server
 
-from motors import Motors
 from command_executor import CommandExecutor
 
 """

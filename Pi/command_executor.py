@@ -1,7 +1,6 @@
 import shared
 
 class CommandExecutor(object):
-
     @staticmethod
     def interpret(command):
         if command == 'start_stream':
