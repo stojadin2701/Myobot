@@ -10,20 +10,35 @@ from getch import _Getch
 from server import StreamingServer
 from server import StreamingHandler
 
-shared.init()
+def main():
+    shared.init()
 
-distance_thread = DistanceSensor()
+    time.sleep(2)
 
-time.sleep(2)
+    START_COMMAND = 0
+    shared.comm.send(START_COMMAND)
 
-START_COMMAND = 0
-shared.comm.send(START_COMMAND)
+    print(shared.comm.receive())
 
-print(shared.comm.receive())
+    distance_ev = threading.Event()
+    distance_ev.set()
+    distance_thread = DistanceSensor(distance_ev)
 
-try:
-#    distance_thread.start()
-    
+
+    with shared.camera:
+        try:
+            distance_thread.start()
+            server = StreamingServer(shared.address, StreamingHandler)
+            server.serve_forever()
+        except Exception as err:
+            print(err)
+        finally:
+            distance_ev.clear()
+            distance_thread.join()
+
+if __name__ == '__main__':
+    main()
+
     """
     getch = _Getch()
 
@@ -41,16 +56,3 @@ try:
         else:
             break
     """
-
-    with shared.camera:
-        try:
-            server = StreamingServer(shared.address, StreamingHandler)
-            server.serve_forever()
-        except Exception as err:
-            print(err)
-
-except Exception as err:
-    print (err)
-
-#finally:
- #   distance_thread.join()

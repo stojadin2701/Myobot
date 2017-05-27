@@ -1,4 +1,5 @@
 import io
+import sys
 
 from threading import RLock
 from configparser import ConfigParser
@@ -30,8 +31,12 @@ def init():
 
     lock = RLock()
     going_forward = False
-    comm = Communicator(config.get('arduino', 'port'), config.getint('arduino', 'baud_rate'))
-      
+
+    try:
+        comm = Communicator(config.get('arduino', 'port'), config.getint('arduino', 'baud_rate'))
+    except:
+        sys.exit('Could not find Arduino on ' + config.get('arduino', 'port'))
+
     with io.open(config.get('web', 'index_location'), 'r') as f:
         index = Template(f.read()).safe_substitute(dict(img_width=config.get('web', 'img_width'), img_height=config.get('web', 'img_height')))
 

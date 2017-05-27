@@ -9,8 +9,12 @@ class DistanceSensor(threading.Thread):
     COMMAND = 1
     DISTANCE_THRESHOLD = 20
 
+    def __init__(self, distance_ev):
+        super(DistanceSensor, self).__init__()
+        self.distance_ev = distance_ev
+
     def run(self):
-        while True:
+        while self.distance_ev.is_set():
             with shared.lock:
                 shared.comm.send(DistanceSensor.COMMAND)
                 distance = shared.comm.receive()
