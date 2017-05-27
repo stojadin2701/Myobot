@@ -1,5 +1,7 @@
 import shared
 
+from distance_sensor import DistanceSensor
+
 """
 
 FINGERS_SPREAD='1'
@@ -52,6 +54,8 @@ class CommandExecutor(object):
             result = 'going backward'
         elif command == 'double tap':
             result = 'options...'
+        elif command == 'distance_request':
+            result = shared.distance_thread.get_last_distance()
         else:
             result = command
         return result

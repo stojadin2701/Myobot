@@ -24,7 +24,7 @@
 		<center>
 			<h1>Myobot</h1>
 			<p id="pose">TestTestTest</p>
-            Distance: <p id="distance"></p>
+            Distance: <p id="distance">distance...</p>
             <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
             <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>
             <br/>
@@ -35,7 +35,7 @@
                     $('#camera').show();
                     $('#stop_stream').show();
                     console.log("Start stream clicked...")
-                    xml_http_post("index.html", 'start_stream', test_handle);
+                    xml_http_post("index.html", 'start_stream', pose_handle);
                 });
 
                 $('#stop_stream').on('click', function(event) {
@@ -43,8 +43,14 @@
                     $('#camera').hide();
                     $('#start_stream').show();
                     console.log("Stop stream clicked...")
-                    xml_http_post("index.html", 'stop_stream', test_handle);
+                    xml_http_post("index.html", 'stop_stream', pose_handle);
                 });
+                
+                window.setInterval(function(){
+                    console.log("Requesting distance");
+                    xml_http_post("index.html", 'distance_request', distance_handle);
+                }, 2000);
+                
             </script>
 		</center>
 	</body>

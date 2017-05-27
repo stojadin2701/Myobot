@@ -20,21 +20,16 @@ def main():
 
     print(shared.comm.receive())
 
-    distance_ev = threading.Event()
-    distance_ev.set()
-    distance_thread = DistanceSensor(distance_ev)
-
-
     with shared.camera:
         try:
-            distance_thread.start()
+#            shared.distance_thread.start()
             server = StreamingServer(shared.address, StreamingHandler)
             server.serve_forever()
         except Exception as err:
             print(err)
         finally:
-            distance_ev.clear()
-            distance_thread.join()
+            shared.distance_ev.clear()
+#            shared.distance_thread.join()
 
 if __name__ == '__main__':
     main()

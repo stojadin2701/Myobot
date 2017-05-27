@@ -42,50 +42,55 @@ function xml_http_post(url, data, callback) {
 	req.send(data);
 }
 
-function test_handle(req) {
+function pose_handle(req) {
 	var elem = document.getElementById('pose')
 		elem.innerHtml =  req.responseText
 }
 
+function distance_handle(req) {
+	var elem = document.getElementById('distance')
+		elem.innerHtml =  req.responseText
+}
+
 $('#start_stream').on('click', function(event) {
-    console.log("Start stream clicked...")
-    xml_http_post("index.html", 'Start stream', test_handle);
+    console.log("Start stream clicked...");
+    xml_http_post("index.html", 'Start stream', pose_handle);
 });
 
 $('#stop_stream').on('click', function(event) {
-    console.log("Stop stream clicked...")
-    xml_http_post("index.html", 'Stop stream', test_handle);
+    console.log("Stop stream clicked...");
+    xml_http_post("index.html", 'Stop stream', pose_handle);
 });
 
 Myo.connect('test.test.test');
 
 Myo.on('connected', function(data, timestamp){
     console.log("Myo successfully connected. Data: " + JSON.stringify(data) + ". Timestamp: " + timestamp + ".");
-    xml_http_post("index.html", 'Armband connected', test_handle);
+    xml_http_post("index.html", 'Armband connected', pose_handle);
     Myo.setLockingPolicy("none");
 })
 
 Myo.on('disconnected', function(){
     console.log("Myo disconnected.");
-    xml_http_post("index.html", 'Armband disconnected', test_handle);
+    xml_http_post("index.html", 'Armband disconnected', pose_handle);
 })
 
 Myo.on('pose', function(pose){
 	console.log(pose);
-	xml_http_post("index.html", pose, test_handle);
+	xml_http_post("index.html", pose, pose_handle);
 })
 
 Myo.on('pose_off', function(pose){
 	console.log('kraj poze' + pose);
-    xml_http_post("index.html", pose + '_off', test_handle);
+    xml_http_post("index.html", pose + '_off', pose_handle);
 });
 
 Myo.on('locked', function(){
 	console.log('zakljucan myo');
-    xml_http_post("index.html", 'Armband locked', test_handle);
+    xml_http_post("index.html", 'Armband locked', pose_handle);
 });
 
 Myo.on('unlocked', function(){
 	console.log('otkljucan myo');
-    xml_http_post("index.html", 'Armband unlocked', test_handle);
+    xml_http_post("index.html", 'Armband unlocked', pose_handle);
 });

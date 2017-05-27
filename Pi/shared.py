@@ -2,12 +2,14 @@ import io
 import sys
 
 from threading import RLock
+from threading import Event
 from configparser import ConfigParser
 from picamera import PiCamera
 from string import Template
 
 from comm_protocol import Communicator
 from server import StreamingOutput
+from distance_sensor import DistanceSensor
 
 def init():
     global lock
@@ -25,6 +27,10 @@ def init():
     global camera
 
     global config
+
+    global distance_ev
+    
+    global distance_thread
     
     config = ConfigParser()
     config.read('config.ini')
@@ -52,3 +58,7 @@ def init():
     camera = PiCamera(resolution = config.get('camera', 'resolution'), framerate = config.getint('camera', 'framerate'))
     camera.hflip = config.getboolean('camera', 'hflip')
     camera.vflip = config.getboolean('camera', 'vflip')
+    
+    distance_ev = Event()
+    distance_ev.set()
+    distance_thread = DistanceSensor(distance_ev)
