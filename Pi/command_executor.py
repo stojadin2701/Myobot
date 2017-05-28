@@ -1,6 +1,7 @@
 import shared
 
 from distance_sensor import DistanceSensor
+from motors import Motors
 
 """
 
@@ -46,16 +47,21 @@ class CommandExecutor(object):
             result = None
         elif command == 'fingers_spread':
             result = 'going forward'
+            #Motors.go_forward_forever()
         elif command == 'wave_in':
             result = 'turning left'
+            #Motors.turn_left_forever()
         elif command == 'wave_out':
             result = 'turning right'
+            #Motors.turn_right_forever()
         elif command == 'fist':
             result = 'going backward'
+            #Motors.go_backward_forever()
         elif command == 'double tap':
             result = 'options...'
         elif command == 'distance_request':
             result = shared.distance_thread.get_last_distance()
         else:
+            #Motors.stop_forever()
             result = command
         return result

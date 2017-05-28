@@ -1,7 +1,7 @@
 import io
 import sys
 
-from threading import RLock
+from threading import Lock
 from threading import Event
 from configparser import ConfigParser
 from picamera import PiCamera
@@ -12,7 +12,9 @@ from server import StreamingOutput
 from distance_sensor import DistanceSensor
 
 def init():
-    global lock
+    #global motor_lock
+    global comm_lock
+
     global going_forward
     global comm
     
@@ -35,7 +37,8 @@ def init():
     config = ConfigParser()
     config.read('config.ini')
 
-    lock = RLock()
+    #motor_lock = Lock()
+    comm_lock = Lock()
     going_forward = False
 
     try:

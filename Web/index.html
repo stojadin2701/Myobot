@@ -15,78 +15,20 @@
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-        <script src = 'myo.js'></script>
-		<script src = 'myscript.js'></script>
-		<title>Myobot</title>
+        <title>Myobot</title>
 	</head>
 
 	<body>
-        <div class='container'>
-           <h1>TWITTER BOOTSTRAP TUTORIAL</h1>
-              <div class='navbar navbar-inverse'>
-                <div class='navbar-inner nav-collapse' style="height: auto;">
-                    <ul class="nav">
-                        <li class="active"><a href="#">Home</a></li>
-                        <li><a href="#">Page One</a></li>
-                        <li><a href="#">Page Two</a></li>
-                    </ul>
-                </div>
-              </div>
-              <div id='content' class='row-fluid'>
-                <div class='span2 sidebar'>
-                    <h3>Left Sidebar</h3>
-                    <ul class="nav nav-tabs nav-stacked">
-                        <li><a href='#'>Another Link 1</a></li>
-                        <li><a href='#'>Another Link 2</a></li>
-                        <li><a href='#'>Another Link 3</a></li>
-                    </ul>
-                </div>
-              <div class='span8 main'>
-                <h2>Main Content Section</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum.<p> 
-
-                    <p>Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius. Claritas est etiam processus dynamicus, qui sequitur mutationem consuetudium lectorum. Mirum est notare quam littera gothica, quam nunc putamus parum claram, anteposuerit litterarum formas humanitatis per seacula quarta decima et quinta decima. Eodem modo typi, qui nunc nobis videntur parum clari, fiant sollemnes in futurum.</p>
-             </div>
-                                                                                                                                                                                               <div class='span2 sidebar'>
-                                                                                                                                                                                                          <h3>Right Sidebar</h3>
-                                                                                                                                                                                                                 <ul class="nav nav-tabs nav-stacked">
-                                                                                                                                                                                                                              <li><a href='#'>Another Link 1</a></li>
-                                                                                                                                                                                                                                       <li><a href='#'>Another Link 2</a></li>
-                                                                                                                                                                                                                                                <li><a href='#'>Another Link 3</a></li>
-                                                                                                                                                                                                                                                       </ul>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                               </div>
-                                                                                                                                                                                                                                                                </div> 
-		<center>
+        <center>
+            <h1>Myobot</h1>
 			<p id="pose">TestTestTest</p>
             Distance: <p id="distance">distance...</p>
             <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
             <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>
             <br/>
             <img id = "camera" src="stream.mjpg" width="${img_width}" height="${img_height}" style="display: none;" />
-            <script>
-                $('#start_stream').on('click', function(event) {
-                    $('#start_stream').hide();
-                    $('#camera').show();
-                    $('#stop_stream').show();
-                    console.log("Start stream clicked...")
-                    xml_http_post("index.html", 'start_stream', pose_handle);
-                });
-
-                $('#stop_stream').on('click', function(event) {
-                    $('#stop_stream').hide();
-                    $('#camera').hide();
-                    $('#start_stream').show();
-                    console.log("Stop stream clicked...")
-                    xml_http_post("index.html", 'stop_stream', pose_handle);
-                });
-                
-                window.setInterval(function(){
-                    console.log("Requesting distance");
-                    xml_http_post("index.html", 'distance_request', distance_handle);
-                }, 2000);
-                
-            </script>
-		</center>
+     	</center>
+        <script src = 'js/myo.js'></script>
+		<script src = 'js/myscript.js'></script>
 	</body>
 </html>

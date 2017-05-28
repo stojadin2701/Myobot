@@ -72,8 +72,26 @@ void setup() {
 	pinMode(DISTANCE_TRIG_PIN, OUTPUT);
 	pinMode(DISTANCE_ECHO_PIN, INPUT);
 
-	Serial.begin(9600); // set the baud rate
+  //  set_motor_powers(-80, -80);
+  //  delay(1000);
+  //  set_motor_powers(0, 0);
 
+ /* 	int powers[] = {200, 0, 200, 0};
+
+	for(unsigned char i = 0; i < sizeof(MOTOR_PINS)/sizeof(unsigned char); i++){
+		analogWrite(MOTOR_PINS[i], powers[i]);
+	}
+ 
+    delay(1000);
+
+	for(unsigned char i = 0; i < sizeof(MOTOR_PINS)/sizeof(unsigned char); i++){
+		analogWrite(MOTOR_PINS[i], 0);
+	}
+*/
+
+
+	Serial.begin(9600); // set the baud rate
+    
 //	while(Serial.available()==0);
 //	received_command = Serial.read();
 //	if(received_command == START){
@@ -96,9 +114,12 @@ void loop() {
 			}
 			case SET_MOTORS: {
 				signed char left_power, right_power;
+                while(Serial.available() == 0);
 				left_power = Serial.read() - 100;	//return to the original range [-100%,100%] 
+                while(Serial.available() == 0);
 				right_power = Serial.read() - 100;
 				set_motor_powers(left_power, right_power);
+                //Serial.println("Powers sent");
 				break;
 			}
 			default: {
@@ -107,5 +128,5 @@ void loop() {
 			}
 		}
 	}
-//	delay(100); // delay for 1/10 of a second
+	delay(100); // delay for 1/10 of a second
 }

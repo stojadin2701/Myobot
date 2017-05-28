@@ -20,20 +20,6 @@ def main():
 
     print(shared.comm.receive())
 
-    with shared.camera:
-        try:
-            shared.distance_thread.start()
-            server = StreamingServer(shared.address, StreamingHandler)
-            server.serve_forever()
-        except Exception as err:
-            print(err)
-        finally:
-            shared.distance_ev.clear()
-            shared.distance_thread.join()
-
-if __name__ == '__main__':
-    main()
-
     """
     getch = _Getch()
 
@@ -51,3 +37,20 @@ if __name__ == '__main__':
         else:
             break
     """
+
+    with shared.camera:
+        try:
+            #shared.distance_thread.start()
+            server = StreamingServer(shared.address, StreamingHandler)
+            server.serve_forever()
+        except Exception as err:
+            print(err)
+        finally:
+            shared.distance_ev.clear()
+            #shared.distance_thread.join()
+
+
+if __name__ == '__main__':
+    main()
+
+    
