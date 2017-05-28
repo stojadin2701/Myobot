@@ -74,11 +74,11 @@ void setup() {
 
 	Serial.begin(9600); // set the baud rate
 
-	while(Serial.available()==0);
-	received_command = Serial.read();
-	if(received_command == START){
-		Serial.println("Ready");
-	}
+//	while(Serial.available()==0);
+//	received_command = Serial.read();
+//	if(received_command == START){
+//		Serial.println("Ready");
+//	}
 }
 
 void loop() {
@@ -86,22 +86,26 @@ void loop() {
 	if(Serial.available()){ 
 		received_command = Serial.read(); // read the incoming data
 		switch(received_command){
+            case START: {
+                Serial.println("Ready");
+                break;
+            }
 			case REQUEST_DISTANCE: {
 				Serial.println(read_distance());
 		 		break;
-				}
+			}
 			case SET_MOTORS: {
 				signed char left_power, right_power;
 				left_power = Serial.read() - 100;	//return to the original range [-100%,100%] 
 				right_power = Serial.read() - 100;
 				set_motor_powers(left_power, right_power);
 				break;
-				 }
+			}
 			default: {
 				Serial.println("COMMAND UNKNOWN");
 				break;
-				 }
+			}
 		}
 	}
-	delay(100); // delay for 1/10 of a second
+//	delay(100); // delay for 1/10 of a second
 }

@@ -38,8 +38,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                         print(e)
                         result = 'error'
                 if result is not None:
-                        self.wfile.write(bytes(result, 'utf-8'))
-
+                        self.wfile.write(result.encode('utf-8'))
+                
          def do_GET(self):
                 if self.path == '/':
                         self.send_response(301)

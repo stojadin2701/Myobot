@@ -22,14 +22,14 @@ def main():
 
     with shared.camera:
         try:
-#            shared.distance_thread.start()
+            shared.distance_thread.start()
             server = StreamingServer(shared.address, StreamingHandler)
             server.serve_forever()
         except Exception as err:
             print(err)
         finally:
             shared.distance_ev.clear()
-#            shared.distance_thread.join()
+            shared.distance_thread.join()
 
 if __name__ == '__main__':
     main()

@@ -44,12 +44,12 @@ function xml_http_post(url, data, callback) {
 
 function pose_handle(req) {
 	var elem = document.getElementById('pose')
-		elem.innerHtml =  req.responseText
+	elem.firstChild.data = req.responseText
 }
 
 function distance_handle(req) {
 	var elem = document.getElementById('distance')
-		elem.innerHtml =  req.responseText
+	elem.firstChild.data = req.responseText
 }
 
 $('#start_stream').on('click', function(event) {
