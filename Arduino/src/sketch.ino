@@ -1,3 +1,5 @@
+#include "NewPing.h"
+
 //Pins for enabling motor control
 const unsigned char ENABLE_PINS[] = {7, 8};
 
@@ -7,12 +9,20 @@ const unsigned char DISTANCE_TRIG_PIN = 2;
 
 const unsigned char DISTANCE_ECHO_PIN = 4;
 
-const unsigned char DISTANCE_SAMPLING_NUM = 3;
+const unsigned char MAX_DISTANCE = 40;
+
+//const unsigned char DISTANCE_SAMPLING_NUM = 3;
 
 enum Command { START, REQUEST_DISTANCE, SET_MOTORS };
 
 unsigned char received_command = 0;
 
+NewPing sonar(DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN, MAX_DISTANCE);
+
+unsigned int ping_speed = 50;
+unsigned long ping_timer;
+
+/*
 long microsecondsToCentimeters(long duration){
 	return duration/29/2;
 }
@@ -36,6 +46,7 @@ long read_distance(){
 	return sum/DISTANCE_SAMPLING_NUM;
 	//return microsecondsToCentimeters(duration);
 }
+*/
 
 
 void set_motor_powers(signed char left_power, signed char right_power){
@@ -72,35 +83,23 @@ void setup() {
 	pinMode(DISTANCE_TRIG_PIN, OUTPUT);
 	pinMode(DISTANCE_ECHO_PIN, INPUT);
 
-  //  set_motor_powers(-80, -80);
-  //  delay(1000);
-  //  set_motor_powers(0, 0);
-
- /* 	int powers[] = {200, 0, 200, 0};
-
-	for(unsigned char i = 0; i < sizeof(MOTOR_PINS)/sizeof(unsigned char); i++){
-		analogWrite(MOTOR_PINS[i], powers[i]);
-	}
- 
-    delay(1000);
-
-	for(unsigned char i = 0; i < sizeof(MOTOR_PINS)/sizeof(unsigned char); i++){
-		analogWrite(MOTOR_PINS[i], 0);
-	}
-*/
-
-
 	Serial.begin(9600); // set the baud rate
-    
-//	while(Serial.available()==0);
-//	received_command = Serial.read();
-//	if(received_command == START){
-//		Serial.println("Ready");
-//	}
+    ping_timer = millis();
+}
+
+void echo_check(){
+    if(sonar.check_timer()){
+        if(sonar.ping_result/US_ROUNDTRIP_CM < 20) set_motor_powers(60, 60);
+        else set_motor_powers(0, 0);
+    }
 }
 
 void loop() {
-//	delay(100);
+    if(millis() >= ping_timer){
+        ping_timer += ping_speed;
+        sonar.ping_timer(echo_check);
+    }
+
 	if(Serial.available()){ 
 		received_command = Serial.read(); // read the incoming data
 		switch(received_command){
@@ -108,10 +107,10 @@ void loop() {
                 Serial.println("Ready");
                 break;
             }
-			case REQUEST_DISTANCE: {
-				Serial.println(read_distance());
-		 		break;
-			}
+//			case REQUEST_DISTANCE: {
+//				Serial.println(read_distance());
+//		 		break;
+//			}
 			case SET_MOTORS: {
 				signed char left_power, right_power;
                 while(Serial.available() == 0);

@@ -100,7 +100,7 @@ $('#start_stream').on('click', function(event) {
     $('#camera').show();
     $('#stop_stream').show();
     console.log("Start stream clicked...")
-        xml_http_post("index.html", 'start_stream', pose_handle);
+    xml_http_post("index.html", 'start_stream', pose_handle);
 });
 
 $('#stop_stream').on('click', function(event) {
