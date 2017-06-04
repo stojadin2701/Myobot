@@ -9,7 +9,8 @@ from string import Template
 
 from comm_protocol import Communicator
 from server import StreamingOutput
-from distance_sensor import DistanceSensor
+#from distance_sensor import DistanceSensor
+from serial_receiver import SerialReceiver
 
 def init():
     #global motor_lock
@@ -30,9 +31,13 @@ def init():
 
     global config
 
-    global distance_ev
+    #global distance_ev
     
-    global distance_thread
+    #global distance_thread
+
+    global receiver_ev
+
+    global receiver_thread
     
     config = ConfigParser()
     config.read('config.ini')
@@ -62,6 +67,9 @@ def init():
     camera.hflip = config.getboolean('camera', 'hflip')
     camera.vflip = config.getboolean('camera', 'vflip')
     
-    distance_ev = Event()
-    distance_ev.set()
-    distance_thread = DistanceSensor(distance_ev)
+    #distance_ev = Event()
+    #distance_ev.set()
+    #distance_thread = DistanceSensor(distance_ev)
+    receiver_ev = Event()
+    receiver_ev.set()
+    receiver_thread = SerialReceiver(receiver_ev)

@@ -3,7 +3,11 @@
 //Pins for enabling motor control
 const unsigned char ENABLE_PINS[] = {7, 8};
 
+const unsigned char ENABLE_PINS_NUM = sizeof(ENABLE_PINS)/sizeof(unsigned char);
+
 const unsigned char MOTOR_PINS[] = {5, 6, 9, 10};
+
+const unsigned char MOTOR_PINS_NUM = sizeof(MOTOR_PINS)/sizeof(unsigned char);
 
 const unsigned char DISTANCE_TRIG_PIN = 2;
 
@@ -11,43 +15,18 @@ const unsigned char DISTANCE_ECHO_PIN = 4;
 
 const unsigned char MAX_DISTANCE = 40;
 
-//const unsigned char DISTANCE_SAMPLING_NUM = 3;
-
-enum Command { START, REQUEST_DISTANCE, SET_MOTORS };
+enum Command { START, SET_MOTORS };
 
 unsigned char received_command = 0;
+
+String received_string;
 
 NewPing sonar(DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN, MAX_DISTANCE);
 
 unsigned int ping_speed = 50;
 unsigned long ping_timer;
 
-/*
-long microsecondsToCentimeters(long duration){
-	return duration/29/2;
-}
-
-long read_distance(){
-	long duration;
-	long sum = 0;
-
-	for(int i = 0; i < DISTANCE_SAMPLING_NUM; i++){
-		digitalWrite(DISTANCE_TRIG_PIN, LOW);
-		delayMicroseconds(2);
-		digitalWrite(DISTANCE_TRIG_PIN, HIGH);
-		delayMicroseconds(10);
-
-		digitalWrite(DISTANCE_TRIG_PIN, LOW);
-
-		duration = pulseIn(DISTANCE_ECHO_PIN, HIGH);
-		sum+=microsecondsToCentimeters(duration);
-		delay(35);
-	}
-	return sum/DISTANCE_SAMPLING_NUM;
-	//return microsecondsToCentimeters(duration);
-}
-*/
-
+boolean device_ready = false;
 
 void set_motor_powers(signed char left_power, signed char right_power){
 	if (left_power < -100 || left_power > 100 || right_power < -100 || right_power > 100) return;
@@ -65,18 +44,24 @@ void set_motor_powers(signed char left_power, signed char right_power){
 		powers[2] = 0;
 		powers[3] = -rp;
 	}
-	for(unsigned char i = 0; i < sizeof(MOTOR_PINS)/sizeof(unsigned char); i++){
+
+    write_motor_powers(powers, MOTOR_PINS_NUM);
+
+}
+
+void write_motor_powers(int powers[], int pin_number){
+    for(unsigned char i = 0; i < pin_number; i++){
 		analogWrite(MOTOR_PINS[i], powers[i]);
 	}
 }
 
 void setup() {
-	for (unsigned char i = 0; i < sizeof(ENABLE_PINS)/sizeof(unsigned char); i++){
+	for (unsigned char i = 0; i < ENABLE_PINS_NUM; i++){
 		pinMode(ENABLE_PINS[i], OUTPUT);
 		digitalWrite(ENABLE_PINS[i], HIGH);
 	}
 
-	for(unsigned char i = 0; i < sizeof(MOTOR_PINS)/sizeof(unsigned char); i++){
+	for(unsigned char i = 0; i < MOTOR_PINS_NUM; i++){
 		pinMode(MOTOR_PINS[i], OUTPUT);
 	}
 
@@ -89,8 +74,19 @@ void setup() {
 
 void echo_check(){
     if(sonar.check_timer()){
-        if(sonar.ping_result/US_ROUNDTRIP_CM < 20) set_motor_powers(60, 60);
-        else set_motor_powers(0, 0);
+        if(sonar.ping_result/US_ROUNDTRIP_CM < 20) {
+            int zero_arr[] = {0, 0, 0, 0};
+            write_motor_powers(zero_arr, MOTOR_PINS_NUM);
+        }
+        //send_distance_info(String(sonar.ping_result));
+    } else {
+        //send_distance_info("...");
+    }
+}
+
+void send_distance_info(String info){
+    if(device_ready){
+        Serial.println(info);
     }
 }
 
@@ -101,31 +97,38 @@ void loop() {
     }
 
 	if(Serial.available()){ 
-		received_command = Serial.read(); // read the incoming data
-		switch(received_command){
+		received_string = Serial.readStringUntil('\n'); // read the incoming data
+        received_string = received_string.substring(0, received_string.length() - 1);
+		switch(received_string.toInt()){
             case START: {
                 Serial.println("Ready");
+                device_ready = true;
                 break;
             }
-//			case REQUEST_DISTANCE: {
-//				Serial.println(read_distance());
-//		 		break;
-//			}
 			case SET_MOTORS: {
-				signed char left_power, right_power;
-                while(Serial.available() == 0);
-				left_power = Serial.read() - 100;	//return to the original range [-100%,100%] 
-                while(Serial.available() == 0);
-				right_power = Serial.read() - 100;
+                signed char left_power, right_power;
+                received_string = Serial.readStringUntil('\n'); // read the incoming data
+                received_string = received_string.substring(0, received_string.length() - 1);
+                left_power = received_string.toInt();
+                Serial.println(left_power);
+                received_string = Serial.readStringUntil('\n'); // read the incoming data
+                received_string = received_string.substring(0, received_string.length() - 1);
+                right_power = received_string.toInt();
+                Serial.println(right_power);
+			    //while(Serial.available() == 0);
+				//left_power = Serial.read() - 100;   //return to the original range [-100%,100%] 
+                //while(Serial.available() == 0);
+				//right_power = Serial.read() - 100;
 				set_motor_powers(left_power, right_power);
                 //Serial.println("Powers sent");
 				break;
 			}
 			default: {
 				Serial.println("COMMAND UNKNOWN");
+                device_ready = false;
 				break;
 			}
 		}
 	}
-	delay(100); // delay for 1/10 of a second
+	//delay(100); // delay for 1/10 of a second
 }

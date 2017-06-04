@@ -15,8 +15,8 @@ def main():
 
     time.sleep(2)
 
-    START_COMMAND = 0
-    shared.comm.send(START_COMMAND)
+    START_COMMAND = '0'
+    shared.comm.send(START_COMMAND+'\n')
 
     print(shared.comm.receive())
 
@@ -40,15 +40,14 @@ def main():
 
     with shared.camera:
         try:
-            #shared.distance_thread.start()
+            #shared.receiver_thread.start()
             server = StreamingServer(shared.address, StreamingHandler)
             server.serve_forever()
         except Exception as err:
             print(err)
         finally:
-            shared.distance_ev.clear()
-            #shared.distance_thread.join()
-
+            shared.receiver_ev.clear()
+            #shared.receiver_thread.join()
 
 if __name__ == '__main__':
     main()
