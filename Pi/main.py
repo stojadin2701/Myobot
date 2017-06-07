@@ -28,6 +28,7 @@ def main():
             START_COMMAND = '1'
             shared.comm.send(START_COMMAND)
             server = StreamingServer(shared.address, StreamingHandler)
+            print('Server started on port ' + str(shared.address[1]))
             server.serve_forever()
         except Exception as err:
             print(err)

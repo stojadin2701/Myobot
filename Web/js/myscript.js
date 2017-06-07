@@ -111,7 +111,7 @@ $('#stop_stream').on('click', function(event) {
         xml_http_post("index.html", 'stop_stream', pose_handle);
 });
 
-window.setInterval(function(){
-    console.log("Requesting distance");
-    xml_http_post("index.html", 'distance_request', distance_handle);
-}, 2000);
+//window.setInterval(function(){
+//    console.log("Requesting distance");
+//    xml_http_post("index.html", 'distance_request', distance_handle);
+//}, 2000);

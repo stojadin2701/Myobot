@@ -15,6 +15,9 @@ const unsigned char DISTANCE_ECHO_PIN = 4;
 
 const unsigned char MAX_DISTANCE = 40;
 
+const unsigned long DEFAULT_TIMEOUT = 300000;
+const unsigned long MOTOR_POWERS_TIMEOUT = 2000;
+
 enum Command { START = 1, SET_MOTORS };
 
 unsigned char received_command = 0;
@@ -46,15 +49,15 @@ void set_motor_powers(signed char left_power, signed char right_power){
         powers[2] = 0;
         powers[3] = -rp;
     }
-
-    if(powers[0] != 0 && powers[2] != 0 && powers[1] == 0 && powers[3] == 0) going_forward = true;
-    else going_forward = false;
-
+   
     write_motor_powers(powers, MOTOR_PINS_NUM);
 
 }
 
 void write_motor_powers(int powers[], int pin_number){
+    if(powers[0] != 0 && powers[2] != 0 && powers[1] == 0 && powers[3] == 0) going_forward = true;
+    else going_forward = false;
+
     for(unsigned char i = 0; i < pin_number; i++){
         analogWrite(MOTOR_PINS[i], powers[i]);
     }
@@ -75,8 +78,7 @@ void setup() {
 
     Serial.begin(115200); // set the baud rate
     ping_timer = millis();
-    Serial.setTimeout(300000);
-    Serial.println(SET_MOTORS);
+    Serial.setTimeout(DEFAULT_TIMEOUT);
 }
 
 void echo_check(){
@@ -88,9 +90,7 @@ void echo_check(){
             Serial.println("Stopping motors!");
         }
         send_distance_info(String(sonar.ping_result/US_ROUNDTRIP_CM));
-    } /*else {
-        send_distance_info("...");
-        }*/
+    }
 }
 
 void send_distance_info(String info){
@@ -107,54 +107,41 @@ void loop() {
 
     if(Serial.available()) {
         received_string = Serial.readStringUntil('\n'); // read the incoming data
-        Serial.print("/Primio: ");
-        Serial.println(received_string);    
-        if (received_string.length()==0) {
-            Serial.println("/TIMEOUT1");
-            //Serial.println(received_string.toInt());
-        }
-
+        Serial.print("Received: ");
+        Serial.println(received_string);
         switch(received_string.toInt()){
             case START: {
-                            Serial.println("/Ready");
-                            device_ready = true;
-                            break;
-                        }
+                Serial.println("Ready");
+                device_ready = true;
+                break;
+            }
             case SET_MOTORS: {
-                                 //Serial.println("HERE");
-                                 signed char left_power, right_power;
-                                 received_string = Serial.readStringUntil('\n'); // read the incoming data
-                                 //Serial.print("/Primio2: ");
-                                 //Serial.println(received_string);
-                                 if (received_string.length()==0) {
-                                     Serial.println("/TIMEOUT2");
-                                     break;
-                                 }
-                                 left_power = received_string.toInt();
-                                 received_string = Serial.readStringUntil('\n'); // read the incoming data
-                                 //Serial.print("/Primio3: ");
-                                 //Serial.println(received_string);
-                                 if (received_string.length()==0) {
-                                     Serial.println("/TIMEOUT3");
-                                     break;
-                                 }
-                                 right_power = received_string.toInt();
-
-                                 //Serial.print("Left: ");
-                                 //Serial.print("<");
-                                 //Serial.println(left_power);
-                                 //Serial.print("Right: ");
-                                 //Serial.print(">");
-                                 //Serial.println(right_power);
-
-                                 set_motor_powers(left_power, right_power);
-                                 break;
-                             }
+                Serial.setTimeout(MOTOR_POWERS_TIMEOUT);
+                signed char left_power, right_power;
+                received_string = Serial.readStringUntil('\n'); // read the incoming data
+                if (received_string.length()==0) {
+                    Serial.println("Setting motor powers timed out...");
+                    Serial.setTimeout(DEFAULT_TIMEOUT);
+                    break;
+                }
+                left_power = received_string.toInt();
+                received_string = Serial.readStringUntil('\n'); // read the incoming data
+                if (received_string.length()==0) {
+                    Serial.println("Setting motor powers timed out...");
+                    Serial.setTimeout(DEFAULT_TIMEOUT);
+                    break;
+                }
+                right_power = received_string.toInt();                 
+                set_motor_powers(left_power, right_power);
+                Serial.setTimeout(DEFAULT_TIMEOUT);
+                break;
+            }
             default: {
-                         Serial.println("/COMMAND UNKNOWN");
-                         device_ready = false;
-                         break;
-                     }
+                Serial.println("COMMAND UNKNOWN");
+                device_ready = false;
+                break;
+            }
         }
     }
+
 }
