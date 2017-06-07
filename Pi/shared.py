@@ -9,20 +9,15 @@ from string import Template
 
 from comm_protocol import Communicator
 from server import StreamingOutput
-#from distance_sensor import DistanceSensor
 from serial_receiver import SerialReceiver
 
 def init():
-    #global motor_lock
     global comm_lock
 
     global going_forward
+    
     global comm
     
-    global index
-    global myo
-    global myscript
-
     global output
 
     global address
@@ -31,18 +26,15 @@ def init():
 
     global config
 
-    #global distance_ev
-    
-    #global distance_thread
-
     global receiver_ev
 
     global receiver_thread
+
+    global web_file_mappings
     
     config = ConfigParser()
     config.read('config.ini')
 
-    #motor_lock = Lock()
     comm_lock = Lock()
     going_forward = False
 
@@ -51,25 +43,29 @@ def init():
     except:
         sys.exit('Could not find Arduino on ' + config.get('arduino', 'port'))
 
-    with io.open(config.get('web', 'index_location'), 'r') as f:
-        index = Template(f.read()).safe_substitute(dict(img_width=config.get('web', 'img_width'), img_height=config.get('web', 'img_height')))
+    web_file_mappings = {}
 
-    with io.open(config.get('web', 'myo_location'), 'r') as f:
-        myo = f.read()
-    with io.open(config.get('web', 'myscript_location'), 'r') as f:
-        myscript = f.read()
+    #read files
+    for page in config.options('web_path_mappings'):
+        with io.open(config.get('web_path_mappings', page), 'r') as f:
+            web_file_mappings[config.get('web_path_mappings', page)[6:]] = f.read() #removes ../Web from the path
+        #print("x %s:::%s" % (path, config.get('web_path_mappings', path)))
 
+    #apply templates
+    Template(web_file_mappings['/index.html']).safe_substitute(dict(img_width=config.get('web_params', 'img_width'), img_height=config.get('web_params', 'img_height')))
+
+    #encode
+    for p, f in web_file_mappings.items():
+        web_file_mappings[p] = f.encode('utf-8')
+    
     output = StreamingOutput()
 
-    address = ('', config.getint('web', 'port'))
+    address = ('', config.getint('web_params', 'port'))
   
     camera = PiCamera(resolution = config.get('camera', 'resolution'), framerate = config.getint('camera', 'framerate'))
     camera.hflip = config.getboolean('camera', 'hflip')
     camera.vflip = config.getboolean('camera', 'vflip')
     
-    #distance_ev = Event()
-    #distance_ev.set()
-    #distance_thread = DistanceSensor(distance_ev)
     receiver_ev = Event()
     receiver_ev.set()
     receiver_thread = SerialReceiver(receiver_ev)

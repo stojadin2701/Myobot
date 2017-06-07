@@ -1,6 +1,5 @@
 import shared
 
-from distance_sensor import DistanceSensor
 from motors import Motors
 
 """

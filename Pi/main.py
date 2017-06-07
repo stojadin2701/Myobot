@@ -4,7 +4,6 @@ import threading
 
 import shared
 
-from distance_sensor import DistanceSensor
 from motors import Motors
 from getch import _Getch
 from server import StreamingServer

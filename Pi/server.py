@@ -46,7 +46,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                         self.send_header('Location', '/index.html')
                         self.end_headers()
                 elif self.path == '/index.html':
-                        content = shared.index.encode('utf-8')
+                        content = shared.web_file_mappings[self.path]    
                         self.send_response(200)
                         self.send_header('content-type', 'text/html')
                         self.send_header('content-length', len(content))
@@ -76,15 +76,8 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                                         'Removed streaming client %s: %s',
                                         self.client_address, str(e))
 
-                elif self.path == '/js/myo.js':
-                        content = shared.myo.encode('utf-8')
-                        self.send_response(200)
-                        self.send_header('content-type', 'application/javascript')
-                        self.send_header('content-length', len(content))
-                        self.end_headers()
-                        self.wfile.write(content)
-                elif self.path == '/js/myscript.js':
-                        content = shared.myscript.encode('utf-8')
+                elif (self.path == '/js/myo.js') or (self.path == '/js/myscript.js'):
+                        content = shared.web_file_mappings[self.path]    
                         self.send_response(200)
                         self.send_header('content-type', 'application/javascript')
                         self.send_header('content-length', len(content))
