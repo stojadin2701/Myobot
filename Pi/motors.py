@@ -3,7 +3,7 @@ import time
 import shared
 
 class Motors(object):
-    COMMAND = '1'
+    COMMAND = '2'
 
     @staticmethod
     def set_motor_powers(left_power, right_power):
@@ -13,9 +13,9 @@ class Motors(object):
         #shared.comm.send()
         shared.comm.send(Motors.COMMAND)
         shared.comm.send(str(left_power))
-        print(shared.comm.receive())
+        #print(shared.comm.receive())
         shared.comm.send(str(right_power))
-        print(shared.comm.receive())
+        #print(shared.comm.receive())
 			
     @staticmethod
     def go(left_power, right_power, stop = False, duration = 1):
