@@ -1,4 +1,5 @@
 import io
+import os
 import logging
 import socketserver
 
@@ -27,6 +28,19 @@ class StreamingOutput(object):
                 return self.buffer.write(buf)
 
 class StreamingHandler(server.BaseHTTPRequestHandler):
+         CONTENT_TYPES = {
+            '.html': 'text/html',
+            '.htm': 'text/html',
+            '.js': 'application/javascript',
+            '.css': 'text/css',
+            '.txt': 'text/plain',
+            '.text': 'text/plain',
+            '.gif': 'image/gif',
+            '.jpeg': 'image/jpeg',
+            '.jpg': 'image/jpg',
+            '.png': 'image/png'
+         }
+
          def do_POST(self):
                 length = int(self.headers['content-length'])
                 data_string = self.rfile.read(length)
@@ -75,11 +89,18 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                                 logging.warning(
                                         'Removed streaming client %s: %s',
                                         self.client_address, str(e))
+                elif os.path.exists('../Web'+self.path) and os.path.isfile('../Web'+self.path):
+                        ext = os.path.splitext(self.path)[1]
+                        if ext in StreamingHandler.CONTENT_TYPES:
+                            content_type = StreamingHandler.CONTENT_TYPES[ext]
+                        else:
+                            content_type = 'text/plain'
 
-                elif (self.path == '/js/myo.js') or (self.path == '/js/myscript.js'):
-                        content = shared.web_file_mappings[self.path]    
+                        with io.open('../Web'+self.path, 'r') as f:
+                            content = f.read().encode('utf-8')
+
                         self.send_response(200)
-                        self.send_header('content-type', 'application/javascript')
+                        self.send_header('content-type', content_type)
                         self.send_header('content-length', len(content))
                         self.end_headers()
                         self.wfile.write(content)
