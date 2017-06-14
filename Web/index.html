@@ -4,37 +4,63 @@
         <meta charset="utf-8"/>
     
         <!--
-        <!-- jQuery -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    
-        <!-- Latest compiled and minified CSS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>    
+ 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-        <!-- Optional theme -->
+   
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-        <!-- Latest compiled and minified JavaScript -->
+      
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         -->
 
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap.min.css">
-        <link rel = stylesheet type = "text/css" href = "css/bootstrap-theme.min.css">
+        <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-theme.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/BootSideMenu.css">
         <title>Myobot</title>
 	</head>
 
-	<body>
+    <body>
         <center>
             <h1>Myobot</h1>
-			<p id="pose">TestTestTest</p>
+            <p id="pose">TestTestTest</p>
             <!--Distance: <p id="distance">distance...</p>-->
             <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
             <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>
             <br/>
             <img id = "camera" src="stream.mjpg" width="${img_width}" height="${img_height}" style="display: none;" />
-     	</center>
+        </center>
+        
+        <div id="test">  
+            <div class="list-group">
+
+                <a href="#item-1" class="list-group-item" data-toggle="collapse">Distance</a>
+
+                <div class="list-group collapse" id="item-1">
+                    <a href="#" class="list-group-item">...cm</a>
+                </div>
+
+                <a href="#item-2" class="list-group-item" data-toggle="collapse">Received commands</a>
+
+                <div class="list-group collapse" id="item-2">
+                    <a href="#" class="list-group-item">...</a>
+                </div>                
+
+            </div>
+
+        </div>
+        
         <script src = "js/jquery.min.js"></script>
         <script src = "js/bootstrap.min.js"></script>
         <script src = "js/myo.js"></script>
-		<script src = "js/myscript.js"></script>
-	</body>
+        <script src = "js/myscript.js"></script>
+        <script src="../js/BootSideMenu.js"></script>
+        <script type="text/javascript">
+        $(document).ready(function () {
+            $('#test').BootSideMenu({
+                side: "right",
+                pushBody: false
+            });
+        });
+        </script>
+    </body>
 </html>
