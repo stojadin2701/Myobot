@@ -16,38 +16,42 @@
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap.min.css">
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-theme.min.css">
 		<link rel="stylesheet" type="text/css" href="../css/BootSideMenu.css">
+		<link rel="stylesheet" type="text/css" href="../css/sticky-footer.css">
         <title>Myobot</title>
 	</head>
 
     <body>
+    
         <center>
-            <h1>Myobot</h1>
-            <p id="pose">TestTestTest</p>
-            <!--Distance: <p id="distance">distance...</p>-->
+            <div class="page-header" style="margin-top:0">
+                <h1>Myobot</h1>
+            </div>
+            <!--<p id="pose">TestTestTest</p>-->
             <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
             <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>
+            <br/>
             <br/>
             <img id = "camera" src="stream.mjpg" width="${img_width}" height="${img_height}" style="display: none;" />
         </center>
         
-        <div id="test">  
+        <div id="right-sidebar">  
             <div class="list-group">
-
                 <a href="#item-1" class="list-group-item" data-toggle="collapse">Distance</a>
-
                 <div class="list-group collapse" id="item-1">
                     <a href="#" class="list-group-item">...cm</a>
                 </div>
-
                 <a href="#item-2" class="list-group-item" data-toggle="collapse">Received commands</a>
-
                 <div class="list-group collapse" id="item-2">
                     <a href="#" class="list-group-item">...</a>
                 </div>                
-
             </div>
-
         </div>
+        
+        <footer class="footer" style="z-index:99999">
+            <center>
+                <p class = "text-muted" style="padding-top:15px">Nemanja Stojoski, 2017</p>
+            </center>
+        </footer>
         
         <script src = "js/jquery.min.js"></script>
         <script src = "js/bootstrap.min.js"></script>
@@ -56,9 +60,11 @@
         <script src="../js/BootSideMenu.js"></script>
         <script type="text/javascript">
         $(document).ready(function () {
-            $('#test').BootSideMenu({
+            $('#right-sidebar').BootSideMenu({
                 side: "right",
-                pushBody: false
+                pushBody: false,
+                remember: false,
+                autoClose: true
             });
         });
         </script>

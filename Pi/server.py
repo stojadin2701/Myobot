@@ -7,6 +7,7 @@ import shared
 
 from threading import Condition
 from http import server
+from string import Template
 
 from command_executor import CommandExecutor
 
@@ -46,7 +47,6 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
         data_string = self.rfile.read(length)
         try:
             result = CommandExecutor.interpret(data_string.decode('utf-8'))
-            #command_dict[result]()
             print(result)
         except Exception as e:
             print(e)
@@ -59,13 +59,6 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_response(301)
             self.send_header('Location', '/index.html')
             self.end_headers()
-        elif self.path == '/index.html':
-            content = shared.web_file_mappings[self.path]    
-            self.send_response(200)
-            self.send_header('content-type', 'text/html')
-            self.send_header('content-length', len(content))
-            self.end_headers()
-            self.wfile.write(content)
         elif self.path == '/stream.mjpg':
             self.send_response(200)
             self.send_header('Age', 0)
@@ -84,20 +77,26 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(frame)
                     self.wfile.write(b'\r\n')
-                    #print('a')
             except Exception as e:
                 logging.warning(
                     'Removed streaming client %s: %s',
                     self.client_address, str(e))
         elif os.path.exists('../Web'+self.path) and os.path.isfile('../Web'+self.path):
-            ext = os.path.splitext(self.path)[1]
-            if ext in StreamingHandler.CONTENT_TYPES:
-                content_type = StreamingHandler.CONTENT_TYPES[ext]   
+            if self.path == '/index.html':
+                with io.open('../Web/index.html', 'r') as f:
+                    content = f.read()
+                Template(content).safe_substitute(dict(img_width=shared.config.get('web_params', 'img_width'), img_height=shared.config.get('web_params', 'img_height')))
+                content = content.encode('utf-8')
+                content_type = 'text/html'
             else:
-                content_type = 'text/plain'
+                ext = os.path.splitext(self.path)[1]
+                if ext in StreamingHandler.CONTENT_TYPES:
+                    content_type = StreamingHandler.CONTENT_TYPES[ext]   
+                else:
+                    content_type = 'text/plain'
 
-            with io.open('../Web'+self.path, 'rb') as f:
-                content = f.read()
+                with io.open('../Web'+self.path, 'rb') as f:
+                    content = f.read()
                     
             self.send_response(200)
             self.send_header('content-type', content_type)
