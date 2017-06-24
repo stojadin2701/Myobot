@@ -26,9 +26,8 @@
         <center>
             <div class="page-header" style="margin-top:0">
                 <h1>Myobot</h1>
-                <div id="console-event"></div>
             </div>
-            <!--<p id="pose">TestTestTest</p>-->
+            <p id="pose"></p>
             <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
             <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>
             <input id="input-toggle" checked data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" type="checkbox">            
@@ -37,22 +36,26 @@
             <img id = "camera" src="stream.mjpg" width="${img_width}" height="${img_height}" style="display: none;" />
         </center>
         
-        <div id="right-sidebar">  
+        <div id="left_sidebar">
+            Hello
+        </div>
+        
+        <div id="right_sidebar">  
             <div class="list-group">
-                <a href="#item-1" class="list-group-item" data-toggle="collapse">Robot control</a>
-                <div class="list-group collapse" id="item-1">
+                <a href="#robot_control" class="list-group-item" data-toggle="collapse">Robot control</a>
+                <div class="list-group collapse" id="robot_control">
                     <span class="toggle-placeholder" />
                     <center class="list-group-item" style="margin-top:7px; margin-bottom:7px;">
                        
                     </center>
                 </div>                
-                <a href="#item-2" class="list-group-item" data-toggle="collapse">Distance</a>
-                <div class="list-group collapse" id="item-2">
-                    <a href="#" class="list-group-item">...cm</a>
+                <a href="#distance_list" class="list-group-item" data-toggle="collapse">Distance</a>
+                <div class="list-group collapse" id="distance_list">
+                    <span id="distance_info" class="list-group-item">Distance measurement will start soon</span>
                 </div>
-                <a href="#item-3" class="list-group-item" data-toggle="collapse">Received commands</a>
-                <div class="list-group collapse" id="item-3">
-                    <a href="#" class="list-group-item">...</a>
+                <a href="#received_commands" class="list-group-item" data-toggle="collapse">Received commands</a>
+                <div class="list-group collapse" id="received_commands">
+                    <p href="#" class="list-group-item">...</p>
                 </div>                
             </div>
         </div>
@@ -70,14 +73,7 @@
         <script src = "js/myscript.js"></script>
         <script src="../js/BootSideMenu.js"></script>
         <script type="text/javascript">
-        $(document).ready(function () {
-            $('#right-sidebar').BootSideMenu({
-                side: "right",
-                pushBody: false,
-                remember: false,
-                autoClose: true
-            });
-        });
+        
         </script>
     </body>
 </html>

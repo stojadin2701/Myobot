@@ -95,7 +95,7 @@ void echo_check(){
 
 void send_distance_info(String info){
     if(device_ready){
-        Serial.println(info);
+        Serial.println("&"+info);
     }
 }
 

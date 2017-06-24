@@ -34,7 +34,7 @@ class Motors(object):
     def go_forward():
         #with shared.lock:
         shared.going_forward = True
-        Motors.go(50, 50)
+        Motors.go(70, 70)
         
     @staticmethod
     def go_backward():

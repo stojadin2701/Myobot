@@ -9,9 +9,9 @@ from getch import _Getch
 from server import StreamingServer
 from server import StreamingHandler
 
-def main():
+def main():    
     shared.init()
-
+    
     time.sleep(2)
 
     

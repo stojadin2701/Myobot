@@ -4,7 +4,7 @@ import threading
 import shared
 
 class SerialReceiver(threading.Thread):
-   
+    
     def __init__(self, receiver_ev):
         super(SerialReceiver, self).__init__()
         self.receiver_ev = receiver_ev
@@ -21,8 +21,13 @@ class SerialReceiver(threading.Thread):
             #self.distance = shared.comm.receive()
             #print(self.distance)
             rcv=shared.comm.receive()
-            print(rcv)
-            """
+            
+            if rcv[0] == '&':
+                self.distance = rcv[1:len(rcv)]
+                print("Distance: " + self.distance)
+            else:
+                print(rcv)
+                """
             if rcv[0]=="/" :
                 print ("Message: ",rcv[1:len(rcv)-1])
                 continue
