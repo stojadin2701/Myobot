@@ -7,6 +7,8 @@ const unsigned char ENABLE_PINS_NUM = sizeof(ENABLE_PINS)/sizeof(unsigned char);
 
 const unsigned char MOTOR_PINS[] = {5, 6, 9, 10};
 
+int ZERO_POWERS[] = {0, 0, 0, 0};
+
 const unsigned char MOTOR_PINS_NUM = sizeof(MOTOR_PINS)/sizeof(unsigned char);
 
 const unsigned char DISTANCE_TRIG_PIN = 2;
@@ -15,10 +17,11 @@ const unsigned char DISTANCE_ECHO_PIN = 4;
 
 const unsigned char MAX_DISTANCE = 40;
 
+const unsigned long TIMEOUT = 1000;
 const unsigned long DEFAULT_TIMEOUT = 300000;
 const unsigned long MOTOR_POWERS_TIMEOUT = 2000;
 
-enum Command { START = 1, SET_MOTORS };
+enum Command { START = 1, SET_MOTORS, HEARTBEAT };
 
 unsigned char received_command = 0;
 
@@ -76,8 +79,9 @@ void setup() {
     pinMode(DISTANCE_TRIG_PIN, OUTPUT);
     pinMode(DISTANCE_ECHO_PIN, INPUT);
 
-    Serial.begin(115200); // set the baud rate
+    Serial.begin(19200); // set the baud rate
     ping_timer = millis();
+	//Serial.setTimeout(TIMEOUT);
     Serial.setTimeout(DEFAULT_TIMEOUT);
 }
 
@@ -85,22 +89,26 @@ void echo_check(){
     //mozda i ovde going_forward &&
     if(sonar.check_timer()){
         if(sonar.ping_result/US_ROUNDTRIP_CM < 20) {
-            int zero_arr[] = {0, 0, 0, 0};
-            write_motor_powers(zero_arr, MOTOR_PINS_NUM);
+            emergency_stop();
             Serial.println("Stopping motors!");
         }
         send_distance_info(String(sonar.ping_result/US_ROUNDTRIP_CM));
     }
 }
 
+void emergency_stop(){
+	write_motor_powers(ZERO_POWERS, MOTOR_PINS_NUM);
+}
+
 void send_distance_info(String info){
-    if(device_ready){
-        Serial.println("&"+info);
-    }
+    //if(device_ready){
+    //    Serial.println("&"+info);
+    //}
+	Serial.println("&"+info);
 }
 
 void loop() {
-    if(device_ready && going_forward && millis() >= ping_timer){
+    if(/*device_ready &&*/ going_forward && millis() >= ping_timer){
         ping_timer += ping_speed;
         sonar.ping_timer(echo_check);
     }
@@ -112,7 +120,7 @@ void loop() {
         switch(received_string.toInt()){
             case START: {
                 Serial.println("Ready");
-                device_ready = true;
+                //device_ready = true;
                 break;
             }
             case SET_MOTORS: {
@@ -120,6 +128,7 @@ void loop() {
                 signed char left_power, right_power;
                 received_string = Serial.readStringUntil('\n'); // read the incoming data
                 if (received_string.length()==0) {
+					emergency_stop();
                     Serial.println("Setting motor powers timed out...");
                     Serial.setTimeout(DEFAULT_TIMEOUT);
                     break;
@@ -127,6 +136,7 @@ void loop() {
                 left_power = received_string.toInt();
                 received_string = Serial.readStringUntil('\n'); // read the incoming data
                 if (received_string.length()==0) {
+					emergency_stop();
                     Serial.println("Setting motor powers timed out...");
                     Serial.setTimeout(DEFAULT_TIMEOUT);
                     break;
@@ -136,9 +146,14 @@ void loop() {
                 Serial.setTimeout(DEFAULT_TIMEOUT);
                 break;
             }
+			case HEARTBEAT: {
+				Serial.print("Heartbeat received <3");
+				break;
+			}
             default: {
+				emergency_stop();
                 Serial.println("COMMAND UNKNOWN");
-                device_ready = false;
+                //device_ready = false;
                 break;
             }
         }

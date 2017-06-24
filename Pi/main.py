@@ -21,6 +21,7 @@ def main():
     with shared.camera:
         try:
             shared.receiver_thread.start()
+            shared.heartbeat_thread.start()
             #while True:
             #    xx=input("talk to me: ")
             #    shared.comm.send(xx)
@@ -33,7 +34,9 @@ def main():
             print(err)
         finally:
             shared.receiver_ev.clear()
+            shared.heartbeat_ev.clear()
             shared.receiver_thread.join()
+            shared.heartbeat_thread.join()
 
 if __name__ == '__main__':
     main()

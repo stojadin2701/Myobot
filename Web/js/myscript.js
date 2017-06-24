@@ -137,7 +137,8 @@ $(function() {
     $('#input-toggle').bootstrapToggle();
 	$('#input-toggle').bootstrapToggle('disable');	
 	$('#input-toggle').change(function() {
-	  myo_control = !$(this).prop('checked');     
+		xml_http_post("index.html", 'stop', pose_handle);
+		myo_control = !$(this).prop('checked');     
     })
 	
 	/*

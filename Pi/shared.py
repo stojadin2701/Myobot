@@ -29,6 +29,10 @@ def init():
     global receiver_ev
 
     global receiver_thread
+    
+    global heartbeat_ev
+
+    global heartbeat_thread
 
     global web_file_mappings
     
@@ -68,4 +72,8 @@ def init():
     
     receiver_ev = Event()
     receiver_ev.set()
-    receiver_thread = SerialReceiver(receiver_ev)
+    receiver_thread = SerialReceiver(receiver_ev)   
+    
+    heartbeat_ev = Event()
+    heartbeat_ev.set()
+    heartbeat_thread = SerialReceiver(heartbeat_ev)
