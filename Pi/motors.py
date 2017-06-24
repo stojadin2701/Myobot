@@ -23,54 +23,27 @@ class Motors(object):
         if stop:
             time.sleep(duration)
             Motors.set_motor_powers(0, 0)
-
+   
     @staticmethod
     def stop():
-        #with shared.lock:
-        shared.going_forward = False
-        Motors.set_motor_powers(0, 0)
-
-    @staticmethod
-    def stop_forever():
         Motors.set_motor_powers(0, 0)
         #with shared.lock:
         shared.going_forward = False
-		
-    @staticmethod
-    def go_forward(duration):
-        #with shared.lock:
-        shared.going_forward = True
-        Motors.go(60, 60, True, duration)
-        #with shared.lock:
-        shared.going_forward = False
 
     @staticmethod
-    def go_backward(duration):
-        Motors.go(-70, -70, True, duration)
-	
-    @staticmethod
-    def turn_left(duration):
-        Motors.go(-80, 80, True, duration)
-
-    @staticmethod
-    def turn_right(duration):
-        Motors.go(80, -80, True, duration)
-
-
-    @staticmethod
-    def go_forward_forever():
+    def go_forward():
         #with shared.lock:
         shared.going_forward = True
         Motors.go(50, 50)
         
     @staticmethod
-    def go_backward_forever():
+    def go_backward():
         Motors.go(-60, -60)
 	
     @staticmethod
-    def turn_left_forever():
+    def turn_left():
         Motors.go(-60, 60)
 
     @staticmethod
-    def turn_right_forever():
+    def turn_right():
         Motors.go(60, -60)

@@ -15,6 +15,7 @@
 
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap.min.css">
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-theme.min.css">
+        <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-toggle.min.css">
 		<link rel="stylesheet" type="text/css" href="../css/BootSideMenu.css">
 		<link rel="stylesheet" type="text/css" href="../css/sticky-footer.css">
         <title>Myobot</title>
@@ -25,10 +26,12 @@
         <center>
             <div class="page-header" style="margin-top:0">
                 <h1>Myobot</h1>
+                <div id="console-event"></div>
             </div>
             <!--<p id="pose">TestTestTest</p>-->
             <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
             <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>
+            <input id="input-toggle" checked data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" type="checkbox">            
             <br/>
             <br/>
             <img id = "camera" src="stream.mjpg" width="${img_width}" height="${img_height}" style="display: none;" />
@@ -36,12 +39,19 @@
         
         <div id="right-sidebar">  
             <div class="list-group">
-                <a href="#item-1" class="list-group-item" data-toggle="collapse">Distance</a>
+                <a href="#item-1" class="list-group-item" data-toggle="collapse">Robot control</a>
                 <div class="list-group collapse" id="item-1">
+                    <span class="toggle-placeholder" />
+                    <center class="list-group-item" style="margin-top:7px; margin-bottom:7px;">
+                       
+                    </center>
+                </div>                
+                <a href="#item-2" class="list-group-item" data-toggle="collapse">Distance</a>
+                <div class="list-group collapse" id="item-2">
                     <a href="#" class="list-group-item">...cm</a>
                 </div>
-                <a href="#item-2" class="list-group-item" data-toggle="collapse">Received commands</a>
-                <div class="list-group collapse" id="item-2">
+                <a href="#item-3" class="list-group-item" data-toggle="collapse">Received commands</a>
+                <div class="list-group collapse" id="item-3">
                     <a href="#" class="list-group-item">...</a>
                 </div>                
             </div>
@@ -55,6 +65,7 @@
         
         <script src = "js/jquery.min.js"></script>
         <script src = "js/bootstrap.min.js"></script>
+        <script src = "js/bootstrap-toggle.min.js"></script>
         <script src = "js/myo.js"></script>
         <script src = "js/myscript.js"></script>
         <script src="../js/BootSideMenu.js"></script>

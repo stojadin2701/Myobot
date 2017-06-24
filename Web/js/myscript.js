@@ -1,17 +1,21 @@
-/*var command_map = { 
-  'fingers_spread':1,
-  'wave_in':2,
-  'wave_out':3,
-  'fist':4,
-  'double_tap':5,
-  'fingers_spread_off':6,
-  'wave_in_off':7,
-  'wave_out_off':8,
-  'fist_off':9,
-  'double_tap_off':10
-  }
-  */
+var pose_map = {
+	'fingers_spread':'forward',
+	'fist':'backward',
+	'wave_in':'left',
+	'wave_out':'right',
+}
 
+var key_map = {
+	'w':'forward',
+	's':'backward',
+	'a':'left',
+	'd':'right'
+}
+
+var myo_control = false;
+
+var last_event = null;
+  
 function xml_http_post(url, data, callback) {
     var req = false;
     try {
@@ -77,12 +81,17 @@ Myo.on('disconnected', function(){
 
 Myo.on('pose', function(pose){
     console.log(pose);
-    xml_http_post("index.html", pose, pose_handle);
+	if(pose in pose_map) {
+			xml_http_post("index.html", pose_map[pose], pose_handle);
+	}
+    
 })
 
 Myo.on('pose_off', function(pose){
     console.log('kraj poze' + pose);
-    xml_http_post("index.html", pose + '_off', pose_handle);
+	if(pose in pose_map){
+		xml_http_post("index.html", 'stop', pose_handle);
+	}
 });
 
 Myo.on('locked', function(){
@@ -110,6 +119,65 @@ $('#stop_stream').on('click', function(event) {
     console.log("Stop stream clicked...")
         xml_http_post("index.html", 'stop_stream', pose_handle);
 });
+
+$(function() {
+    $('#input-toggle').bootstrapToggle();
+	$('#input-toggle-two').bootstrapToggle({
+      on: 'Keyboard',
+      off: 'Myo'
+    });
+	$('#input-toggle').change(function() {
+	  myo_control = !$(this).prop('checked');
+	  $('#console-event').html('myo_control = ' + myo_control);      
+    })
+})
+
+$(function() {
+    var $checkbox = '<input type="checkbox" checked="checked" data-toggle="toggle" data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" />'
+    $('.toggle-placeholder').html($checkbox);
+    $('.toggle-placeholder').find('input[type=checkbox][data-toggle=toggle]')
+                            .each(function(){
+        $(this).bootstrapToggle();
+    });
+});
+
+document.addEventListener('keydown', (event) => {
+	if(last_event && last_event.key === event.key) return;
+	last_event = event;
+	
+	const key_name = event.key;
+	if(!myo_control && (key_name === 'w' || key_name === 's' || key_name === 'a' || key_name === 'd')){
+		xml_http_post("index.html", key_map[key_name], pose_handle);
+		switch(key_name) {
+		case 'w':
+			console.log('forward');
+			break;
+		case 's':
+			console.log('backward');
+			break;
+		case 'a':
+			console.log('left');
+			break;
+		case 'd':
+			console.log('right');
+			break;
+		}  
+	}  
+}, false);
+
+document.addEventListener('keyup', (event) => {
+	last_event = null;
+	const key_name = event.key;
+	
+	if((!myo_control && (key_name === 'w' || key_name === 's' || key_name === 'a' || key_name === 'd')) || key_name === ' '){
+		xml_http_post("index.html", 'stop', pose_handle);
+		console.log('Halt');
+	}
+	
+}, false);
+
+
+
 
 //window.setInterval(function(){
 //    console.log("Requesting distance");
