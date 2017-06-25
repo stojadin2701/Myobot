@@ -3,12 +3,14 @@ import threading
 
 import shared
 
-class SerialReceiver(threading.Thread):
+class Heartbeat(threading.Thread):
+    COMMAND = '3'
     
     def __init__(self, heartbeat_ev):
-        super(SerialReceiver, self).__init__()
+        super(Heartbeat, self).__init__()
         self.heartbeat_ev = heartbeat_ev
-        self.distance = '---'
 
     def run(self):
         while self.heartbeat_ev.is_set():
+            shared.comm.send(Heartbeat.COMMAND)
+            time.sleep(0.7)

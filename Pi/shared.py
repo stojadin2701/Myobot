@@ -10,6 +10,7 @@ from string import Template
 from comm_protocol import Communicator
 from server import StreamingOutput
 from serial_receiver import SerialReceiver
+from heartbeat import Heartbeat
 
 def init():
     global comm_lock
@@ -76,4 +77,4 @@ def init():
     
     heartbeat_ev = Event()
     heartbeat_ev.set()
-    heartbeat_thread = SerialReceiver(heartbeat_ev)
+    heartbeat_thread = Heartbeat(heartbeat_ev)

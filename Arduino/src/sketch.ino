@@ -15,19 +15,24 @@ const unsigned char DISTANCE_TRIG_PIN = 2;
 
 const unsigned char DISTANCE_ECHO_PIN = 4;
 
-const unsigned char MAX_DISTANCE = 40;
+const unsigned char MAX_DISTANCE = 80;
 
 const unsigned long TIMEOUT = 1000;
 const unsigned long DEFAULT_TIMEOUT = 300000;
 const unsigned long MOTOR_POWERS_TIMEOUT = 2000;
+const unsigned long HEARTBEAT_TIMEOUT = 1000;
+
 
 enum Command { START = 1, SET_MOTORS, HEARTBEAT };
 
 unsigned char received_command = 0;
 
+unsigned long last_heartbeat = millis();
+
 String received_string;
 
 NewPing sonar(DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN, MAX_DISTANCE);
+
 
 unsigned int ping_speed = 50;
 unsigned long ping_timer;
@@ -35,6 +40,8 @@ unsigned long ping_timer;
 boolean device_ready = false;
 
 boolean going_forward = false;
+
+boolean motors_running = false;
 
 void set_motor_powers(signed char left_power, signed char right_power){
     if (left_power < -100 || left_power > 100 || right_power < -100 || right_power > 100) return;
@@ -59,7 +66,11 @@ void set_motor_powers(signed char left_power, signed char right_power){
 
 void write_motor_powers(int powers[], int pin_number){
     if(powers[0] != 0 && powers[2] != 0 && powers[1] == 0 && powers[3] == 0) going_forward = true;
-    else going_forward = false;
+    else {		
+		going_forward = false;
+	}
+	if(powers[0] != 0 || powers[2] != 0 || powers[1] != 0 || powers[3] != 0) motors_running = true;
+	else motors_running = false;
 
     for(unsigned char i = 0; i < pin_number; i++){
         analogWrite(MOTOR_PINS[i], powers[i]);
@@ -79,7 +90,7 @@ void setup() {
     pinMode(DISTANCE_TRIG_PIN, OUTPUT);
     pinMode(DISTANCE_ECHO_PIN, INPUT);
 
-    Serial.begin(19200); // set the baud rate
+    Serial.begin(57600); // set the baud rate
     ping_timer = millis();
 	//Serial.setTimeout(TIMEOUT);
     Serial.setTimeout(DEFAULT_TIMEOUT);
@@ -97,7 +108,9 @@ void echo_check(){
 }
 
 void emergency_stop(){
-	write_motor_powers(ZERO_POWERS, MOTOR_PINS_NUM);
+	if(motors_running){
+		write_motor_powers(ZERO_POWERS, MOTOR_PINS_NUM);
+	}
 }
 
 void send_distance_info(String info){
@@ -112,7 +125,13 @@ void loop() {
         ping_timer += ping_speed;
         sonar.ping_timer(echo_check);
     }
+	
+	if (millis() - last_heartbeat > HEARTBEAT_TIMEOUT){
+		emergency_stop();
+	}
 
+	//Serial.println("...");
+	
     if(Serial.available()) {
         received_string = Serial.readStringUntil('\n'); // read the incoming data
         Serial.print("Received: ");
@@ -147,7 +166,8 @@ void loop() {
                 break;
             }
 			case HEARTBEAT: {
-				Serial.print("Heartbeat received <3");
+				last_heartbeat = millis();
+				Serial.println("@Heartbeat received <3");
 				break;
 			}
             default: {
