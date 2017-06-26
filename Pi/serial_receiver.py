@@ -20,8 +20,8 @@ class SerialReceiver(threading.Thread):
             #decode messages based on the received value
             #self.distance = shared.comm.receive()
             #print(self.distance)
-            rcv=shared.comm.receive()
             
+            rcv=shared.comm.receive()            
             if rcv[0] == '&':
                 self.distance = rcv[1:len(rcv)]
                 print("Distance: " + self.distance)

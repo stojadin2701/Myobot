@@ -57,7 +57,7 @@ function distance_handle(req) {
     //$('#distance_info').html = req.responseText + " cm";
 }
 
-$('#start_stream').on('click', function(event) {
+/*$('#start_stream').on('click', function(event) {
     console.log("Start stream clicked...");
     xml_http_post("index.html", 'Start stream', pose_handle);
 });
@@ -65,7 +65,7 @@ $('#start_stream').on('click', function(event) {
 $('#stop_stream').on('click', function(event) {
     console.log("Stop stream clicked...");
     xml_http_post("index.html", 'Stop stream', pose_handle);
-});
+});*/
 
 Myo.connect('test.test.test');
 

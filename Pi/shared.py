@@ -13,7 +13,7 @@ from serial_receiver import SerialReceiver
 from heartbeat import Heartbeat
 
 def init():
-    global comm_lock
+    #global comm_lock
 
     global going_forward
     
@@ -40,7 +40,7 @@ def init():
     config = ConfigParser()
     config.read('config.ini')
 
-    comm_lock = Lock()
+    #comm_lock = Lock()
     going_forward = False
 
     try:

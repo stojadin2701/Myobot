@@ -19,7 +19,7 @@ const unsigned char MAX_DISTANCE = 80;
 
 const unsigned long TIMEOUT = 1000;
 const unsigned long DEFAULT_TIMEOUT = 300000;
-const unsigned long MOTOR_POWERS_TIMEOUT = 2000;
+const unsigned long MOTOR_POWERS_TIMEOUT = 500;
 const unsigned long HEARTBEAT_TIMEOUT = 1000;
 
 
@@ -32,6 +32,8 @@ unsigned long last_heartbeat = millis();
 String received_string;
 
 NewPing sonar(DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN, MAX_DISTANCE);
+
+boolean off = true;
 
 
 unsigned int ping_speed = 50;
@@ -50,7 +52,7 @@ void set_motor_powers(signed char left_power, signed char right_power){
     int rp = 256*right_power/100;
 
     int powers[] = {lp, 0, rp, 0};
-
+	
     if (left_power < 0){
         powers[0] = 0;
         powers[1] = -lp;
@@ -65,16 +67,11 @@ void set_motor_powers(signed char left_power, signed char right_power){
 }
 
 void write_motor_powers(int powers[], int pin_number){
-    if(powers[0] != 0 && powers[2] != 0 && powers[1] == 0 && powers[3] == 0) going_forward = true;
-    else {		
-		going_forward = false;
-	}
-	if(powers[0] != 0 || powers[2] != 0 || powers[1] != 0 || powers[3] != 0) motors_running = true;
-	else motors_running = false;
-
-    for(unsigned char i = 0; i < pin_number; i++){
+	for(unsigned char i = 0; i < pin_number; i++){
         analogWrite(MOTOR_PINS[i], powers[i]);
     }
+	going_forward = powers[0] != 0 && powers[2] != 0 && powers[1] == 0 && powers[3] == 0;
+	motors_running = powers[0] != 0 || powers[1] != 0 || powers[2] != 0 || powers[3] != 0;
 }
 
 void setup() {
@@ -89,8 +86,10 @@ void setup() {
 
     pinMode(DISTANCE_TRIG_PIN, OUTPUT);
     pinMode(DISTANCE_ECHO_PIN, INPUT);
+	
+	pinMode(LED_BUILTIN, OUTPUT);
 
-    Serial.begin(57600); // set the baud rate
+    Serial.begin(9600); // set the baud rate
     ping_timer = millis();
 	//Serial.setTimeout(TIMEOUT);
     Serial.setTimeout(DEFAULT_TIMEOUT);
@@ -117,7 +116,7 @@ void send_distance_info(String info){
     //if(device_ready){
     //    Serial.println("&"+info);
     //}
-	Serial.println("&"+info);
+	if(going_forward) Serial.println("&"+info);
 }
 
 void loop() {
@@ -128,14 +127,25 @@ void loop() {
 	
 	if (millis() - last_heartbeat > HEARTBEAT_TIMEOUT){
 		emergency_stop();
+		digitalWrite(LED_BUILTIN, HIGH);
+		delay(50);
+		digitalWrite(LED_BUILTIN, LOW);
+		delay(50);
+		digitalWrite(LED_BUILTIN, HIGH);
+		delay(50);
+		digitalWrite(LED_BUILTIN, LOW);
+		delay(50);
+		digitalWrite(LED_BUILTIN, HIGH);
+		delay(50);
+		digitalWrite(LED_BUILTIN, LOW);
 	}
 
 	//Serial.println("...");
 	
     if(Serial.available()) {
         received_string = Serial.readStringUntil('\n'); // read the incoming data
-        Serial.print("Received: ");
-        Serial.println(received_string);
+        //Serial.print("Received: ");
+        //Serial.println(received_string);
         switch(received_string.toInt()){
             case START: {
                 Serial.println("Ready");
@@ -166,13 +176,16 @@ void loop() {
                 break;
             }
 			case HEARTBEAT: {
-				last_heartbeat = millis();
-				Serial.println("@Heartbeat received <3");
+				last_heartbeat = millis();				
+				digitalWrite(LED_BUILTIN, off ? HIGH : LOW);
+				off=!off;
+				//Serial.println("Heartbeat received <3");
 				break;
 			}
             default: {
 				emergency_stop();
-                Serial.println("COMMAND UNKNOWN");
+				Serial.println("COMMAND UNKNOWN"+received_string);
+                //Serial.println("COMMAND UNKNOWN");
                 //device_ready = false;
                 break;
             }

@@ -46,6 +46,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
         length = int(self.headers['content-length'])
         data_string = self.rfile.read(length)
         try:
+            print('received ajax request: '+ data_string.decode('utf-8'));
             result = CommandExecutor.interpret(data_string.decode('utf-8'))
             print(result)
         except Exception as e:

@@ -13,18 +13,12 @@ def main():
     shared.init()
     
     time.sleep(2)
-
-    
-    #print(shared.comm.receive())
-
        
     with shared.camera:
         try:
             shared.receiver_thread.start()
             shared.heartbeat_thread.start()
-            #while True:
-            #    xx=input("talk to me: ")
-            #    shared.comm.send(xx)
+            
             START_COMMAND = '1'
             shared.comm.send(START_COMMAND)
             server = StreamingServer(shared.address, StreamingHandler)
