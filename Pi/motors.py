@@ -9,12 +9,11 @@ class Motors(object):
     def set_motor_powers(left_power, right_power):
         if left_power < -100 or left_power > 100 or right_power < -100 or right_power > 100:
             raise ValueError('Bad motor power range: ' + str(left_power)+' '+str(right_power))
-        #with shared.comm_lock:
-        #shared.comm.send()
-        shared.comm.send(Motors.COMMAND)
-        shared.comm.send(str(left_power))
+        shared.comm.send(Motors.COMMAND+';'+str(left_power)+','+str(right_power))
+        print('Sent: ' + Motors.COMMAND+';'+str(left_power)+','+str(right_power))
+        #shared.comm.send(str(left_power))
         #print(shared.comm.receive())
-        shared.comm.send(str(right_power))
+        #shared.comm.send(str(right_power))
         #print(shared.comm.receive())
 			
     @staticmethod

@@ -146,14 +146,24 @@ void loop() {
         received_string = Serial.readStringUntil('\n'); // read the incoming data
         //Serial.print("Received: ");
         //Serial.println(received_string);
-        switch(received_string.toInt()){
+        switch(received_string.substring(0, 1).toInt()){
             case START: {
                 Serial.println("Ready");
                 //device_ready = true;
                 break;
             }
             case SET_MOTORS: {
-                Serial.setTimeout(MOTOR_POWERS_TIMEOUT);
+				signed char left_power, right_power;
+				int first_delimiter = received_string.indexOf(';');
+				int second_delimiter = received_string.indexOf(',');
+				
+				left_power = received_string.substring(first_delimiter+1, second_delimiter).toInt();
+				right_power = received_string.substring(second_delimiter+1).toInt();
+				//Serial.println("Left power: "+received_string.substring(first_delimiter+1, second_delimiter));
+				//Serial.println("Right power: "+received_string.substring(second_delimiter+1));
+				set_motor_powers(left_power, right_power);
+				break;
+                /*Serial.setTimeout(MOTOR_POWERS_TIMEOUT);
                 signed char left_power, right_power;
                 received_string = Serial.readStringUntil('\n'); // read the incoming data
                 if (received_string.length()==0) {
@@ -173,7 +183,7 @@ void loop() {
                 right_power = received_string.toInt();                 
                 set_motor_powers(left_power, right_power);
                 Serial.setTimeout(DEFAULT_TIMEOUT);
-                break;
+                break;*/
             }
 			case HEARTBEAT: {
 				last_heartbeat = millis();				
