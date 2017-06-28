@@ -5,7 +5,6 @@ import threading
 import shared
 
 from motors import Motors
-from getch import _Getch
 from server import StreamingServer
 from server import StreamingHandler
 

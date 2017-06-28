@@ -18,8 +18,3 @@ class Communicator(object):
         print('in:' + str(self.ser.inWaiting()))
         return self.ser.readline().decode('utf-8')
 
-    def send_int(self, data):
-        with self.comm_lock:
-            self.ser.write(bytes(str(chr(data)), 'utf-8'))
-        #print('sending: '+str(data))
-
