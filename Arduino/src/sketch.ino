@@ -200,12 +200,12 @@ void loop() {
             }
 			case LIGHTS_ON: {
 				Serial.println("Lights on...");
-				Serial.write(LIGHTS_PIN, HIGH);
+				digitalWrite(LIGHTS_PIN, HIGH);
 				break;
 			}
 			case LIGHTS_OFF: {
 				Serial.println("Lights off...");
-				Serial.write(LIGHTS_PIN, LOW);
+				digitalWrite(LIGHTS_PIN, LOW);
 				break;
 			}
 			case HEARTBEAT: {

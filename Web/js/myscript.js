@@ -9,7 +9,8 @@ var key_map = {
 	'w':'forward',
 	's':'backward',
 	'a':'left',
-	'd':'right'
+	'd':'right',
+	'f':'lights_on'
 }
 
 var myo_control = false;
@@ -161,30 +162,6 @@ $(function() {
 });
 */
 
-document.addEventListener('keydown', (event) => {
-	if(last_event && last_event.key === event.key) return;
-	last_event = event;
-	
-	const key_name = event.key;
-	if(!myo_control && (key_name === 'w' || key_name === 's' || key_name === 'a' || key_name === 'd')){
-		xml_http_post("index.html", key_map[key_name], pose_handle);
-		switch(key_name) {
-		case 'w':
-			console.log('forward');
-			break;
-		case 's':
-			console.log('backward');
-			break;
-		case 'a':
-			console.log('left');
-			break;
-		case 'd':
-			console.log('right');
-			break;
-		}  
-	}  
-}, false);
-
 $(document).ready(function () {
 	$('#left_sidebar').BootSideMenu({
 		side: "left",
@@ -252,6 +229,35 @@ document.addEventListener('keyup', (event) => {
 		console.log('Halt');
 	}
 	
+}, false);
+
+
+document.addEventListener('keydown', (event) => {
+	if(last_event && last_event.key === event.key) return;
+	last_event = event;
+	
+	const key_name = event.key;
+	if(!myo_control && (key_name === 'w' || key_name === 's' || key_name === 'a' || key_name === 'd' || key_name === 'f')){
+		if(key_name === 'f') { 
+			$('#light-toggle').bootstrapToggle('toggle');
+		} else{
+			xml_http_post("index.html", key_map[key_name], pose_handle);
+		}
+		switch(key_name) {
+		case 'w':
+			console.log('forward');
+			break;
+		case 's':
+			console.log('backward');
+			break;
+		case 'a':
+			console.log('left');
+			break;
+		case 'd':
+			console.log('right');
+			break;
+		}  
+	}  
 }, false);
 
 
