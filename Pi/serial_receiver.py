@@ -8,7 +8,7 @@ class SerialReceiver(threading.Thread):
     def __init__(self, receiver_ev):
         super(SerialReceiver, self).__init__()
         self.receiver_ev = receiver_ev
-        self.distance = '---'
+        #self.distance = '---'
 
     def get_last_distance(self):
         #maybe some mutex here
@@ -23,8 +23,10 @@ class SerialReceiver(threading.Thread):
             
             rcv=shared.comm.receive()            
             if rcv[0] == '&':
-                self.distance = rcv[1:len(rcv)]
-                print("Distance: " + self.distance)
+                shared.command_executor.distance.distance = rcv[1:len(rcv)]
+                shared.command_executor.distance_ev.set()
+                shared.command_executor.distance_ev.clear()
+                print("Distance: " + shared.command_executor.distance.distance)
             else:
                 print(rcv)
                 """

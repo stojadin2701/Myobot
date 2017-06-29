@@ -15,7 +15,9 @@ const unsigned char DISTANCE_TRIG_PIN = 2;
 
 const unsigned char DISTANCE_ECHO_PIN = 4;
 
-const unsigned char MAX_DISTANCE = 80;
+const unsigned char LIGHTS_PIN = 12;
+
+const unsigned char MAX_DISTANCE = 100;
 
 const unsigned long TIMEOUT = 1000;
 const unsigned long DEFAULT_TIMEOUT = 300000;
@@ -23,7 +25,7 @@ const unsigned long MOTOR_POWERS_TIMEOUT = 500;
 const unsigned long HEARTBEAT_TIMEOUT = 1000;
 
 
-enum Command { START = 1, SET_MOTORS, HEARTBEAT };
+enum Command { START = 1, DISTANCE, SET_MOTORS, LIGHTS_ON, LIGHTS_OFF, HEARTBEAT };
 
 unsigned char received_command = 0;
 
@@ -35,9 +37,10 @@ NewPing sonar(DISTANCE_TRIG_PIN, DISTANCE_ECHO_PIN, MAX_DISTANCE);
 
 boolean off = true;
 
-
-unsigned int ping_speed = 50;
+unsigned int ping_speed = 60;
 unsigned long ping_timer;
+
+String last_distance = "---";
 
 boolean device_ready = false;
 
@@ -87,6 +90,8 @@ void setup() {
     pinMode(DISTANCE_TRIG_PIN, OUTPUT);
     pinMode(DISTANCE_ECHO_PIN, INPUT);
 	
+	pinMode(LIGHTS_PIN, OUTPUT);
+	
 	pinMode(LED_BUILTIN, OUTPUT);
 
     Serial.begin(9600); // set the baud rate
@@ -98,11 +103,12 @@ void setup() {
 void echo_check(){
     //mozda i ovde going_forward &&
     if(sonar.check_timer()){
-        if(sonar.ping_result/US_ROUNDTRIP_CM < 20) {
+        if(going_forward && sonar.ping_result/US_ROUNDTRIP_CM < 25) {
             emergency_stop();
             Serial.println("Stopping motors!");
         }
-        send_distance_info(String(sonar.ping_result/US_ROUNDTRIP_CM));
+		last_distance = String(sonar.ping_result/US_ROUNDTRIP_CM);
+        //send_distance_info(last_distance);
     }
 }
 
@@ -120,14 +126,15 @@ void send_distance_info(String info){
 }
 
 void loop() {
-    if(/*device_ready &&*/ going_forward && millis() >= ping_timer){
+    if(/*device_ready &&*/ /*going_forward &&*/ millis() >= ping_timer){
         ping_timer += ping_speed;
         sonar.ping_timer(echo_check);
     }
 	
 	if (millis() - last_heartbeat > HEARTBEAT_TIMEOUT){
 		emergency_stop();
-		digitalWrite(LED_BUILTIN, HIGH);
+		digitalWrite(LED_BUILTIN, LOW);
+		/*digitalWrite(LED_BUILTIN, HIGH);
 		delay(50);
 		digitalWrite(LED_BUILTIN, LOW);
 		delay(50);
@@ -138,6 +145,7 @@ void loop() {
 		digitalWrite(LED_BUILTIN, HIGH);
 		delay(50);
 		digitalWrite(LED_BUILTIN, LOW);
+		*/
 	}
 
 	//Serial.println("...");
@@ -149,6 +157,11 @@ void loop() {
         switch(received_string.substring(0, 1).toInt()){
             case START: {
                 Serial.println("Ready");
+                //device_ready = true;
+                break;
+            }
+			case DISTANCE: {
+                Serial.println("&" + last_distance);
                 //device_ready = true;
                 break;
             }
@@ -185,6 +198,16 @@ void loop() {
                 Serial.setTimeout(DEFAULT_TIMEOUT);
                 break;*/
             }
+			case LIGHTS_ON: {
+				Serial.println("Lights on...");
+				Serial.write(LIGHTS_PIN, HIGH);
+				break;
+			}
+			case LIGHTS_OFF: {
+				Serial.println("Lights off...");
+				Serial.write(LIGHTS_PIN, LOW);
+				break;
+			}
 			case HEARTBEAT: {
 				last_heartbeat = millis();				
 				digitalWrite(LED_BUILTIN, off ? HIGH : LOW);

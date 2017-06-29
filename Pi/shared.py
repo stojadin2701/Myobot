@@ -11,6 +11,7 @@ from comm_protocol import Communicator
 from server import StreamingOutput
 from serial_receiver import SerialReceiver
 from heartbeat import Heartbeat
+from command_executor import CommandExecutor
 
 def init():
     global going_forward
@@ -34,6 +35,10 @@ def init():
     global heartbeat_thread
 
     global web_file_mappings
+    
+    global command_executor
+    
+    global distance_ev
     
     config = ConfigParser()
     config.read('config.ini')
@@ -60,3 +65,7 @@ def init():
     heartbeat_ev = Event()
     heartbeat_ev.set()
     heartbeat_thread = Heartbeat(heartbeat_ev)
+    
+    distance_ev = Event()
+    
+    command_executor = CommandExecutor()

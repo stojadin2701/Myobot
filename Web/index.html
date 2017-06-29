@@ -12,7 +12,7 @@
       
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         -->
-
+        
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap.min.css">
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-theme.min.css">
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-toggle.min.css">
@@ -26,11 +26,13 @@
         <center>
             <div class="page-header" style="margin-top:0">
                 <h1>Myobot</h1>
+                <img type="button" id="logo" src="myo50.png" style="vertical-align:text-bottom;">
             </div>
             <p id="pose"></p>
             <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
-            <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>
-            <input id="input-toggle" checked data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" type="checkbox">            
+            <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>              
+            <input id="input-toggle" checked data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" type="checkbox">
+            <!--<input id="input-toggle" checked data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" type="checkbox">      -->      
             <br/>
             <br/>
             <img id = "camera" src="stream.mjpg" width="${img_width}" height="${img_height}" style="display: none;" />
@@ -40,8 +42,17 @@
             Hello
         </div>
         
-        <div id="right_sidebar">  
-            <div class="list-group">
+        <div id="right_sidebar">
+            <hr/>
+            <center>
+            <input id="light-toggle" data-on="Lights on" data-off="Lights off" data-onstyle="success" type="checkbox">
+            <br/>
+            <input id="distance-toggle" data-on="Distance on" data-off="Distance off" data-onstyle="success" type="checkbox">
+            
+            <span id="distance_info" class="list-group-item" style="display: none;">Distance measurement will start soon</span>
+            
+            </center>
+            <!--<div class="list-group">
                 <a href="#robot_control" class="list-group-item" data-toggle="collapse">Robot control</a>
                 <div class="list-group collapse" id="robot_control">
                     <span class="toggle-placeholder" />
@@ -57,7 +68,7 @@
                 <div class="list-group collapse" id="received_commands">
                     <p href="#" class="list-group-item">...</p>
                 </div>                
-            </div>
+            </div>-->
         </div>
         
         <footer class="footer" style="z-index:99999">

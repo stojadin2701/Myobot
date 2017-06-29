@@ -16,6 +16,8 @@ var myo_control = false;
 
 var right_sidebar_opened = false;
 
+var send_distance_request = false;
+
 var last_event = null;
   
 function xml_http_post(url, data, callback) {
@@ -69,8 +71,7 @@ $('#stop_stream').on('click', function(event) {
 
 Myo.connect('test.test.test');
 
-Myo.on('connected', function(data, timestamp){
-	$('#input-toggle').bootstrapToggle('enable');
+Myo.on('connected', function(data, timestamp){	
     console.log("Myo successfully connected. Data: " + JSON.stringify(data) + ". Timestamp: " + timestamp + ".");
     xml_http_post("index.html", 'armband_connected', pose_handle);
     Myo.setLockingPolicy("none");
@@ -83,6 +84,17 @@ Myo.on('disconnected', function(){
     xml_http_post("index.html", 'armband_disconnected', pose_handle);
 	xml_http_post("index.html", 'stop', pose_handle);
 })
+
+Myo.on('arm_synced', function(){
+	$('#input-toggle').bootstrapToggle('enable');
+	xml_http_post("index.html", 'armband_synced', pose_handle);
+});
+
+Myo.on('arm_unsynced', function(){
+	$('#input-toggle').bootstrapToggle('on');
+	$('#input-toggle').bootstrapToggle('disable');
+	xml_http_post("index.html", 'armband_unsynced', pose_handle);
+});
 
 Myo.on('pose', function(pose){
     console.log(pose);
@@ -100,21 +112,15 @@ Myo.on('pose_off', function(pose){
 });
 
 Myo.on('locked', function(){
-    console.log('myo zakljucan');
+	$('#input-toggle').bootstrapToggle('on');
+	$('#input-toggle').bootstrapToggle('disable');
+    console.log('myo zakljucan');	
     xml_http_post("index.html", 'armband_locked', pose_handle);
 });
 
 Myo.on('unlocked', function(){
     console.log('myo otkljucan');
     xml_http_post("index.html", 'armband_unlocked', pose_handle);
-});
-
-Myo.on('arm_synced', function(){
-	xml_http_post("index.html", 'armband_synced', pose_handle);
-});
-
-Myo.on('arm_unsynced', function(){
-	xml_http_post("index.html", 'armband_unsynced', pose_handle);
 });
 
 $('#start_stream').on('click', function(event) {
@@ -133,13 +139,8 @@ $('#stop_stream').on('click', function(event) {
     xml_http_post("index.html", 'stop_stream', pose_handle);
 });
 
-$(function() {
-    $('#input-toggle').bootstrapToggle();
-	$('#input-toggle').bootstrapToggle('disable');	
-	$('#input-toggle').change(function() {
-		xml_http_post("index.html", 'stop', pose_handle);
-		myo_control = !$(this).prop('checked');     
-    })
+$(function() {   
+	
 	
 	/*
 	$('#input-toggle-two').bootstrapToggle({
@@ -204,6 +205,42 @@ $(document).ready(function () {
 			right_sidebar_opened = false;
 		}
 	});
+	$('#input-toggle').bootstrapToggle();
+	$('#input-toggle').bootstrapToggle('disable');	
+	$('#input-toggle').change(function() {
+		xml_http_post("index.html", 'stop', pose_handle);
+		myo_control = !$(this).prop('checked');     
+    })
+	
+	$('#light-toggle').bootstrapToggle();	
+	$('#light-toggle').change(function() {
+		if($(this).prop('checked')) {
+			state = 'on';
+		} else {
+			state = 'off';
+		}
+		xml_http_post("index.html", 'lights_'+state, pose_handle);     
+    })
+	$('#light-toggle').parent().css("width", "100px");
+	$('#light-toggle').parent().css("height", "34px");
+	$('#light-toggle').parent().css("margin-top", "5px");
+	$('#light-toggle').parent().css("margin-bottom", "5px");
+	
+	$('#distance-toggle').bootstrapToggle();	
+	$('#distance-toggle').change(function() {
+		if($(this).prop('checked')) {
+			send_distance_request = true;
+			$('#distance_info').show();
+		} else {
+			send_distance_request = false;
+			$('#distance_info').hide();
+		}		     
+    })	
+	$('#distance-toggle').parent().css("width", "110px");
+	$('#distance-toggle').parent().css("height", "34px");	
+	$('#distance-toggle').parent().css("margin-top", "5px");
+	$('#distance-toggle').parent().css("margin-bottom", "5px");
+	
 });
 
 document.addEventListener('keyup', (event) => {
@@ -218,8 +255,15 @@ document.addEventListener('keyup', (event) => {
 }, false);
 
 
-window.setInterval(function(){
+/*window.setInterval(function(){
 	if(right_sidebar_opened == true && $('#distance_list').attr('aria-expanded') == "true"){
+		console.log("Requesting distance");
+		xml_http_post("index.html", 'distance_request', distance_handle);
+	}
+}, 500);*/
+
+window.setInterval(function(){
+	if(send_distance_request){
 		console.log("Requesting distance");
 		xml_http_post("index.html", 'distance_request', distance_handle);
 	}

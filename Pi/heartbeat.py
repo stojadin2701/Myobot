@@ -4,7 +4,7 @@ import threading
 import shared
 
 class Heartbeat(threading.Thread):
-    COMMAND = '3'
+    COMMAND = '6'
     
     def __init__(self, heartbeat_ev):
         super(Heartbeat, self).__init__()

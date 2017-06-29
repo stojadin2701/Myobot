@@ -4,7 +4,6 @@ import threading
 
 import shared
 
-from motors import Motors
 from server import StreamingServer
 from server import StreamingHandler
 
