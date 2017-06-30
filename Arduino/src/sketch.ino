@@ -75,6 +75,12 @@ void write_motor_powers(int powers[], int pin_number){
 	for(unsigned char i = 0; i < pin_number; i++){
         analogWrite(MOTOR_PINS[i], powers[i]);
     }
+	
+	/*Serial.print("Written powers: ");
+	for(unsigned char i = 0; i < pin_number; i++){
+        Serial.print(String(MOTOR_PINS[i]) + ":" + String(powers[i]) + " ");
+    }
+	Serial.println();*/
 	going_forward = powers[0] != 0 && powers[2] != 0 && powers[1] == 0 && powers[3] == 0;
 	motors_running = powers[0] != 0 || powers[1] != 0 || powers[2] != 0 || powers[3] != 0;
 }
@@ -100,6 +106,7 @@ void setup() {
     ping_timer = millis();
 	//Serial.setTimeout(TIMEOUT);
     Serial.setTimeout(DEFAULT_TIMEOUT);
+	Serial.println("IN SETUP");
 }
 
 void echo_check(){
@@ -128,8 +135,9 @@ void send_distance_info(String info){
 }
 
 void loop() {
-    if ((device_ready && (going_forward || measure_distance)) && millis() >= ping_timer){
-        ping_timer += ping_speed;
+	//Serial.println("f..");
+    if (device_ready && (going_forward || measure_distance) && (millis() >= ping_timer)){        
+		ping_timer += ping_speed;
         sonar.ping_timer(echo_check);
     }
 	
@@ -156,6 +164,7 @@ void loop() {
         received_string = Serial.readStringUntil('\n'); // read the incoming data
         //Serial.print("Received: ");
         //Serial.println(received_string);
+		//if(device_ready) Serial.println("a");
         switch(received_string.substring(0, 1).toInt()){
 			case START: {
 				Serial.println("Ready");
@@ -163,6 +172,7 @@ void loop() {
 				break;
 			}
 			case DISTANCE_ON: {
+				Serial.println("Distance on...");
 				measure_distance = true;
 				break;
 			}
@@ -171,6 +181,7 @@ void loop() {
 				break;
 			}
 			case DISTANCE_OFF: {
+				Serial.println("Distance off...");
 				measure_distance = false;
 				break;
 			}
@@ -209,6 +220,8 @@ void loop() {
 			}
 			default: {
 				emergency_stop();
+				device_ready = false;
+				measure_distance = false;
 				Serial.println("COMMAND UNKNOWN: "+received_string);
 				//Serial.println("COMMAND UNKNOWN");
 				//device_ready = false;
