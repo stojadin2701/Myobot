@@ -2,52 +2,94 @@
 <html>
 	<head>
         <meta charset="utf-8"/>
-    
-        <!--
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>    
- 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-   
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-      
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-        -->
         
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap.min.css">
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-theme.min.css">
         <link rel = "stylesheet" type = "text/css" href = "css/bootstrap-toggle.min.css">
-		<link rel="stylesheet" type="text/css" href="../css/BootSideMenu.css">
-		<link rel="stylesheet" type="text/css" href="../css/sticky-footer.css">
+		<link rel="stylesheet" type="text/css" href="css/BootSideMenu.css">
+		<link rel="stylesheet" type="text/css" href="css/page-style.css">
         <title>Myobot</title>
 	</head>
 
-    <body>
+    <body style="background-color:#F9F9F9;">
     
         <center>
             <div class="page-header" style="margin-top:0">
                 <h1>Myobot</h1>
-                <img type="button" id="logo" src="myo50.png" style="vertical-align:text-bottom;">
+                <!--<img type="button" id="logo" src="myo50.png" style="vertical-align:text-bottom;">-->
             </div>
             <p id="pose"></p>
             <button id = "start_stream" type="button" class="btn btn-primary">Start stream</button>
             <button id = "stop_stream" type="button" class="btn btn-danger" style="display: none;">Stop stream</button>              
-            <input id="input-toggle" checked data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" type="checkbox">
-            <!--<input id="input-toggle" checked data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" type="checkbox">      -->      
+            <input id="input-toggle" checked data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" type="checkbox">   
             <br/>
             <br/>
             <img id = "camera" src="stream.mjpg" width="${img_width}" height="${img_height}" style="display: none;" />
         </center>
         
-        <div id="left_sidebar">
-            Hello
+        <div id="left_sidebar" style="background-color:#FCFCFC;">
+            <center>
+                <br/>
+                <br/>
+                <span style="font-size: 25px; padding-bottom:50px">Help</span>
+            </center>
+            <hr style="margin-top: 3px;"/>
+            <p> 
+            </p>
+            <div class="list-group">
+
+                <a href="#item-1" class="list-group-item" data-toggle="collapse">Camera stream</a>
+
+                <div class="list-group collapse" id="item-1">
+                    <p class = "help-p">Pressing the "Start stream" button will start the stream from the camera. Likewise, "Stop stream" will stop the stream from the camera.
+                    </p>
+                </div>
+
+                <a href="#item-2" class="list-group-item" data-toggle="collapse">Keyboard control</a>
+
+                <div class="list-group collapse" id="item-2">
+                    <p class = "help-p">The default method for platform control is via keyboard. You can navigate by holding 'w', 's', 'a' or 'd' to move forward, backward, turn left or turn right. When you release these keys the platform will stop moving.
+                    </p>
+                </div>
+
+                <a href="#item-3" class="list-group-item" data-toggle="collapse">Myo control</a>
+
+                <div class="list-group collapse" id="item-3">
+                    <p class = "help-p">You can also control the platform via Myo armband. You need to have "Myo Connect" program installed on your computer, and the Myo Bluetooth dongle inserted. When you sync the armband, the input toggle will be enabled and you can switch to Myo control. 
+                    <br/>
+                    The platform will move forward, backward, turn left or turn right when you make hand poses 'fingers-spread', 'fist', 'wave-in' and 'wave-out'. The platform will stop when you stop making hand poses.
+                    </p>
+                </div>
+
+                <a href="#item-4" class="list-group-item" data-toggle="collapse">Additional commands</a>
+
+                <div class="list-group collapse" id="item-4">
+                    <p class = "help-p">Expanding the right sidebar will enable acces to additional commands.
+                    <br/>
+                    You can switch the "Lights" toggle to turn on the four LEDs on the platform.
+                    <br/>
+                    By switching the "Distance" toggle you will be shown the last distance measured by the platform's ultrasonic sensor. The sensor will make measurements of up to 1 meter and the distance will update every 500ms.
+                    <br/>
+                    You can also toggle the lights by pressing the 'f' key and show measured distance by pressing the 't' key. Pressing the spacebar will stop the platform in both keyboard and Myo control mode. Pressing 'j' and 'k' will expand or collapse left and right sidebars.
+                    <br/>                    
+                    </p>
+                </div>
+
         </div>
         
-        <div id="right_sidebar">
-            <hr/>
+        </div>
+        
+        <div id="right_sidebar" style="background-color:#FCFCFC;">
             <center>
-            <input id="light-toggle" data-on="Lights on" data-off="Lights off" data-onstyle="success" type="checkbox">
+                <br/>
+                <br/>
+                <span style="font-size: 25px;">Additional commands</span>
+            </center>
+            <hr style="margin-top: 3px;"/>
+            <center>
+            <input id="light-toggle" data-on="Lights" data-off="Lights" data-onstyle="success" type="checkbox">
             <br/>
-            <input id="distance-toggle" data-on="Distance on" data-off="Distance off" data-onstyle="success" type="checkbox">
+            <input id="distance-toggle" data-on="Distance" data-off="Distance" data-onstyle="success" type="checkbox">
             
             <span id="distance_info" class="list-group-item" style="display: none;">Distance measurement will start soon</span>
             
@@ -71,7 +113,7 @@
             </div>-->
         </div>
         
-        <footer class="footer" style="z-index:99999">
+        <footer class="footer" style="background-color:#EDEDED; z-index:99999">
             <center>
                 <p class = "text-muted" style="padding-top:15px">Nemanja Stojoski, 2017</p>
             </center>

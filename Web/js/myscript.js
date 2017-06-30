@@ -230,6 +230,27 @@ document.addEventListener('keyup', (event) => {
 		console.log('Halt');
 	}
 	
+	switch(key_name) {
+		case 'f':
+			$('#light-toggle').bootstrapToggle('toggle');
+			break;
+		case 't':
+			$('#distance-toggle').bootstrapToggle('toggle');
+			if(!right_sidebar_opened) {
+				$('#right_sidebar').find(".toggler").trigger("click");
+			}
+			break;
+		case 'v':
+			
+			break;
+		case 'j':
+			$('#left_sidebar').find(".toggler").trigger("click");
+			break;
+		case 'k':
+			$('#right_sidebar').find(".toggler").trigger("click");
+			break;
+	}
+	
 }, false);
 
 
@@ -241,26 +262,19 @@ document.addEventListener('keydown', (event) => {
 	if(!myo_control && (key_name === 'w' || key_name === 's' || key_name === 'a' || key_name === 'd')){
 		xml_http_post("index.html", key_map[key_name], pose_handle);
 		switch(key_name) {
-		case 'w':
-			console.log('forward');
-			break;
-		case 's':
-			console.log('backward');
-			break;
-		case 'a':
-			console.log('left');
-			break;
-		case 'd':
-			console.log('right');
-			break;
+			case 'w':
+				console.log('forward');
+				break;
+			case 's':
+				console.log('backward');
+				break;
+			case 'a':
+				console.log('left');
+				break;
+			case 'd':
+				console.log('right');
+				break;
 		}
-	}
-	if(key_name === 'f') { 
-		$('#light-toggle').bootstrapToggle('toggle');
-	} else if(key_name === 't'){
-		$('#distance-toggle').bootstrapToggle('toggle');
-	} else if(key_name === 'v'){
-		//$('#distance-toggle').bootstrapToggle('toggle');
 	}
 }, false);
 

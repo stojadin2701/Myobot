@@ -13,17 +13,14 @@ class Distance(object):
         return cls.__instance
     
     def __init__(self):
-        if(self.__initialized): return
-        
-        self.__initialized = True
-        
+        if(self.__initialized): return        
+        self.__initialized = True        
         self.distance = "..."
     
     def request_distance(self):
         shared.comm.send(Distance.COMMAND)
         shared.command_executor.distance_ev.wait()
         return self.distance
-        
 
 class Motors(object):
     COMMAND = '3'
@@ -33,32 +30,32 @@ class Motors(object):
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = object.__new__(cls)
+            cls.__instance.__initialized = False
         return cls.__instance
     
+    def __init__(self):
+        if(self.__initialized): return        
+        self.__initialized = True
+        self.going_forward = False
+
     def set_motor_powers(self, left_power, right_power):
         if left_power < -100 or left_power > 100 or right_power < -100 or right_power > 100:
             raise ValueError('Bad motor power range: ' + str(left_power)+' '+str(right_power))
         shared.comm.send(Motors.COMMAND+';'+str(left_power)+','+str(right_power))
         print('Sent: ' + Motors.COMMAND+';'+str(left_power)+','+str(right_power))
-        #shared.comm.send(str(left_power))
-        #print(shared.comm.receive())
-        #shared.comm.send(str(right_power))
-        #print(shared.comm.receive())
-			
+ 
     def go(self, left_power, right_power, stop = False, duration = 1):
         self.set_motor_powers(left_power, right_power)
         if stop:
             time.sleep(duration)
             self.set_motor_powers(0, 0)
-   
+
     def stop(self):
         self.set_motor_powers(0, 0)
-        #with shared.lock:
-        shared.going_forward = False
+        self.going_forward = False
 
     def go_forward(self):
-        #with shared.lock:
-        shared.going_forward = True
+        self.going_forward = True
         self.go(70, 70)
         
     def go_backward(self):

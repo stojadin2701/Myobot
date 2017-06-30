@@ -4,18 +4,29 @@ import threading
 
 import shared
 
+from heartbeat import Heartbeat
+from serial_receiver import SerialReceiver
 from server import StreamingServer
 from server import StreamingHandler
+from threading import Event
 
 def main():    
     shared.init()
     
+    receiver_ev = Event()
+    receiver_ev.set()
+    receiver_thread = SerialReceiver(receiver_ev)   
+    
+    heartbeat_ev = Event()
+    heartbeat_ev.set()
+    heartbeat_thread = Heartbeat(heartbeat_ev)
+    
     time.sleep(2)
        
     with shared.camera:
-        try:
-            shared.receiver_thread.start()
-            shared.heartbeat_thread.start()
+        try:                   
+            receiver_thread.start()
+            heartbeat_thread.start()
             
             START_COMMAND = '1'
             shared.comm.send(START_COMMAND)
@@ -25,10 +36,10 @@ def main():
         except Exception as err:
             print(err)
         finally:
-            shared.receiver_ev.clear()
-            shared.heartbeat_ev.clear()
-            shared.receiver_thread.join()
-            shared.heartbeat_thread.join()
+            receiver_ev.clear()
+            heartbeat_ev.clear()
+            receiver_thread.join()
+            heartbeat_thread.join()
 
 if __name__ == '__main__':
     main()

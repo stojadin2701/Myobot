@@ -1,5 +1,7 @@
 #!/bin/bash
 
+u_appeared=false
+
 check_u_flag() {
     if [ "$u_appeared" = false ]
 		then 
@@ -13,8 +15,6 @@ if [ "$EUID" -ne 0 ]
 	then echo "You must run this script as root!" >&2
 	exit
 fi
-
-u_appeared=false
 
 while getopts "u" opt; do
   case $opt in

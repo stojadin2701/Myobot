@@ -15,6 +15,6 @@ class Communicator(object):
         
 	
     def receive(self):
-        print('in:' + str(self.ser.inWaiting()))
+        #print('in:' + str(self.ser.inWaiting()))
         return self.ser.readline().decode('utf-8')
 
