@@ -3,6 +3,7 @@ var pose_map = {
 	'fist':'backward',
 	'wave_in':'left',
 	'wave_out':'right',
+	'double_tap':'lights_on'
 }
 
 var key_map = {
@@ -100,14 +101,14 @@ Myo.on('arm_unsynced', function(){
 Myo.on('pose', function(pose){
     console.log(pose);
 	if(myo_control && (pose in pose_map)) {
-			xml_http_post("index.html", pose_map[pose], pose_handle);
-	}
-    
+		xml_http_post("index.html", pose_map[pose], pose_handle);
+		if(pose === 'double_tap') $('#light-toggle').bootstrapToggle('toggle');
+	}    
 })
 
 Myo.on('pose_off', function(pose){
     console.log('kraj poze' + pose);
-	if(myo_control && (pose in pose_map)){
+	if(myo_control && (pose in pose_map) && pose!=='double_tap'){
 		xml_http_post("index.html", 'stop', pose_handle);
 	}
 });
@@ -237,12 +238,8 @@ document.addEventListener('keydown', (event) => {
 	last_event = event;
 	
 	const key_name = event.key;
-	if(!myo_control && (key_name === 'w' || key_name === 's' || key_name === 'a' || key_name === 'd' || key_name === 'f')){
-		if(key_name === 'f') { 
-			$('#light-toggle').bootstrapToggle('toggle');
-		} else{
-			xml_http_post("index.html", key_map[key_name], pose_handle);
-		}
+	if(!myo_control && (key_name === 'w' || key_name === 's' || key_name === 'a' || key_name === 'd')){
+		xml_http_post("index.html", key_map[key_name], pose_handle);
 		switch(key_name) {
 		case 'w':
 			console.log('forward');
@@ -256,8 +253,15 @@ document.addEventListener('keydown', (event) => {
 		case 'd':
 			console.log('right');
 			break;
-		}  
-	}  
+		}
+	}
+	if(key_name === 'f') { 
+		$('#light-toggle').bootstrapToggle('toggle');
+	} else if(key_name === 't'){
+		$('#distance-toggle').bootstrapToggle('toggle');
+	} else if(key_name === 'v'){
+		//$('#distance-toggle').bootstrapToggle('toggle');
+	}
 }, false);
 
 
