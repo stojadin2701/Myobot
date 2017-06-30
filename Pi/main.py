@@ -28,18 +28,21 @@ def main():
             receiver_thread.start()
             heartbeat_thread.start()
             
-            START_COMMAND = '1'
-            shared.comm.send(START_COMMAND)
+            START = '1'
+            shared.comm.send(START)
             server = StreamingServer(shared.address, StreamingHandler)
             print('Server started on port ' + str(shared.address[1]))
             server.serve_forever()
         except Exception as err:
             print(err)
-        finally:
-            receiver_ev.clear()
+        finally:           
             heartbeat_ev.clear()
-            receiver_thread.join()
             heartbeat_thread.join()
+            END = '9'
+            shared.comm.send(END)
+            receiver_ev.clear()            
+            receiver_thread.join()
+            
 
 if __name__ == '__main__':
     main()

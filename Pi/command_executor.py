@@ -35,8 +35,10 @@ class CommandExecutor(object):
             'stop': self.motors.stop,
             'armband_disconnected': self.motors.stop,
             'armband_unsynced': self.motors.stop,
-            'lights_on': self.lights.on,
-            'lights_off': self.lights.off,
+            'lights_on': self.lights.lights_on,
+            'lights_off': self.lights.lights_off,
+            'distance_on': self.distance.distance_on,
+            'distance_off': self.distance.distance_off,
             'stop_stream': shared.camera.stop_recording
         }
         
@@ -47,8 +49,8 @@ class CommandExecutor(object):
         elif command == 'start_stream':
             shared.camera.start_recording(shared.output, format = 'mjpeg')
             result = command
-        elif command == 'distance_request':
-            result = self.distance.request_distance()
+        elif command == 'get_distance':
+            result = self.distance.get_distance()
             #result = shared.receiver_thread.get_last_distance()       
         else:
             result = command

@@ -56,6 +56,10 @@ function pose_handle(req) {
 	$('#pose').html = req.responseText;
 }
 
+function on_off_distance_handle(req) {
+	
+}
+
 function distance_handle(req) {
 	document.getElementById("distance_info").innerHTML = req.responseText + " cm";
     //$('#distance_info').html = req.responseText + " cm";
@@ -207,9 +211,11 @@ $(document).ready(function () {
 	$('#distance-toggle').bootstrapToggle();	
 	$('#distance-toggle').change(function() {
 		if($(this).prop('checked')) {
+			xml_http_post("index.html", 'distance_on', on_off_distance_handle);
 			send_distance_request = true;
 			$('#distance_info').show();
 		} else {
+			xml_http_post("index.html", 'distance_off', on_off_distance_handle);
 			send_distance_request = false;
 			$('#distance_info').hide();
 		}		     
@@ -289,6 +295,6 @@ document.addEventListener('keydown', (event) => {
 window.setInterval(function(){
 	if(send_distance_request){
 		console.log("Requesting distance");
-		xml_http_post("index.html", 'distance_request', distance_handle);
+		xml_http_post("index.html", 'get_distance', distance_handle);
 	}
 }, 500);

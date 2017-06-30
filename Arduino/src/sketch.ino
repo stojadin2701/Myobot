@@ -25,7 +25,7 @@ const unsigned long MOTOR_POWERS_TIMEOUT = 500;
 const unsigned long HEARTBEAT_TIMEOUT = 1000;
 
 
-enum Command { START = 1, DISTANCE, SET_MOTORS, LIGHTS_ON, LIGHTS_OFF, HEARTBEAT };
+enum Command { START = 1, DISTANCE_ON, GET_DISTANCE, DISTANCE_OFF, SET_MOTORS, LIGHTS_ON, LIGHTS_OFF, HEARTBEAT, END};
 
 unsigned char received_command = 0;
 
@@ -47,6 +47,8 @@ boolean device_ready = false;
 boolean going_forward = false;
 
 boolean motors_running = false;
+
+boolean measure_distance = false;
 
 void set_motor_powers(signed char left_power, signed char right_power){
     if (left_power < -100 || left_power > 100 || right_power < -100 || right_power > 100) return;
@@ -126,7 +128,7 @@ void send_distance_info(String info){
 }
 
 void loop() {
-    if(/*device_ready &&*/ /*going_forward &&*/ millis() >= ping_timer){
+    if ((device_ready && (going_forward || measure_distance)) && millis() >= ping_timer){
         ping_timer += ping_speed;
         sonar.ping_timer(echo_check);
     }
@@ -155,49 +157,32 @@ void loop() {
         //Serial.print("Received: ");
         //Serial.println(received_string);
         switch(received_string.substring(0, 1).toInt()){
-            case START: {
-                Serial.println("Ready");
-                //device_ready = true;
-                break;
-            }
-			case DISTANCE: {
-                Serial.println("&" + last_distance);
-                //device_ready = true;
-                break;
-            }
-            case SET_MOTORS: {
+			case START: {
+				Serial.println("Ready");
+				device_ready = true;
+				break;
+			}
+			case DISTANCE_ON: {
+				measure_distance = true;
+				break;
+			}
+			case GET_DISTANCE: {
+				Serial.println("&" + last_distance);
+				break;
+			}
+			case DISTANCE_OFF: {
+				measure_distance = false;
+				break;
+			}
+			case SET_MOTORS: {
 				signed char left_power, right_power;
 				int first_delimiter = received_string.indexOf(';');
-				int second_delimiter = received_string.indexOf(',');
-				
+				int second_delimiter = received_string.indexOf(',');				
 				left_power = received_string.substring(first_delimiter+1, second_delimiter).toInt();
 				right_power = received_string.substring(second_delimiter+1).toInt();
-				//Serial.println("Left power: "+received_string.substring(first_delimiter+1, second_delimiter));
-				//Serial.println("Right power: "+received_string.substring(second_delimiter+1));
 				set_motor_powers(left_power, right_power);
 				break;
-                /*Serial.setTimeout(MOTOR_POWERS_TIMEOUT);
-                signed char left_power, right_power;
-                received_string = Serial.readStringUntil('\n'); // read the incoming data
-                if (received_string.length()==0) {
-					emergency_stop();
-                    Serial.println("Setting motor powers timed out...");
-                    Serial.setTimeout(DEFAULT_TIMEOUT);
-                    break;
-                }
-                left_power = received_string.toInt();
-                received_string = Serial.readStringUntil('\n'); // read the incoming data
-                if (received_string.length()==0) {
-					emergency_stop();
-                    Serial.println("Setting motor powers timed out...");
-                    Serial.setTimeout(DEFAULT_TIMEOUT);
-                    break;
-                }
-                right_power = received_string.toInt();                 
-                set_motor_powers(left_power, right_power);
-                Serial.setTimeout(DEFAULT_TIMEOUT);
-                break;*/
-            }
+			}
 			case LIGHTS_ON: {
 				Serial.println("Lights on...");
 				digitalWrite(LIGHTS_PIN, HIGH);
@@ -215,13 +200,20 @@ void loop() {
 				//Serial.println("Heartbeat received <3");
 				break;
 			}
-            default: {
+			case END:{
 				emergency_stop();
-				Serial.println("COMMAND UNKNOWN"+received_string);
-                //Serial.println("COMMAND UNKNOWN");
-                //device_ready = false;
-                break;
-            }
+				device_ready = false;
+				measure_distance = false;
+				Serial.println("Bye.");				
+				break;
+			}
+			default: {
+				emergency_stop();
+				Serial.println("COMMAND UNKNOWN: "+received_string);
+				//Serial.println("COMMAND UNKNOWN");
+				//device_ready = false;
+				break;
+			}
         }
     }
 

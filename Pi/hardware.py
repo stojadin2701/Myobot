@@ -2,8 +2,10 @@ import shared
 import time
 
 class Distance(object):
-    COMMAND = '2'
-	
+    DISTANCE_ON = '2'
+    GET_DISTANCE = '3'
+    DISTANCE_OFF = '4'
+    
     __instance = None
     
     def __new__(cls):
@@ -17,13 +19,19 @@ class Distance(object):
         self.__initialized = True        
         self.distance = "..."
     
-    def request_distance(self):
-        shared.comm.send(Distance.COMMAND)
+    def distance_on(self):
+        shared.comm.send(Distance.DISTANCE_ON)
+    
+    def get_distance(self):
+        shared.comm.send(Distance.GET_DISTANCE)
         shared.command_executor.distance_ev.wait()
         return self.distance
-
+    
+    def distance_off(self):
+        shared.comm.send(Distance.DISTANCE_OFF)
+        
 class Motors(object):
-    COMMAND = '3'
+    COMMAND = '5'
 
     __instance = None
     
@@ -69,8 +77,8 @@ class Motors(object):
 
         
 class Lights(object):
-    LIGHTS_ON = '4'
-    LIGHTS_OFF = '5'
+    LIGHTS_ON = '6'
+    LIGHTS_OFF = '7'
 	
     __instance = None
     
@@ -79,8 +87,8 @@ class Lights(object):
             cls.__instance = object.__new__(cls)
         return cls.__instance
     
-    def on(self):
+    def lights_on(self):
         shared.comm.send(Lights.LIGHTS_ON)
         
-    def off(self):
+    def lights_off(self):
         shared.comm.send(Lights.LIGHTS_OFF)
