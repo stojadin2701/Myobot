@@ -105,7 +105,7 @@ Myo.on('arm_unsynced', function(){
 Myo.on('pose', function(pose){
     console.log(pose);
 	if(myo_control && (pose in pose_map)) {
-		xml_http_post("index.html", pose_map[pose], pose_handle);
+		if(pose !== 'double_tap') xml_http_post("index.html", pose_map[pose], pose_handle);
 		if(pose === 'double_tap') $('#light-toggle').bootstrapToggle('toggle');
 	}    
 })

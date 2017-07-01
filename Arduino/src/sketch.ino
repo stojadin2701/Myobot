@@ -127,6 +127,13 @@ void emergency_stop(){
 	}
 }
 
+void finish(){
+	emergency_stop();
+	device_ready = false;
+	measure_distance = false;
+	digitalWrite(LED_BUILTIN, LOW);
+}
+
 void send_distance_info(String info){
     //if(device_ready){
     //    Serial.println("&"+info);
@@ -212,16 +219,12 @@ void loop() {
 				break;
 			}
 			case END:{
-				emergency_stop();
-				device_ready = false;
-				measure_distance = false;
+				finish();
 				Serial.println("Bye.");				
 				break;
 			}
 			default: {
-				emergency_stop();
-				device_ready = false;
-				measure_distance = false;
+				finish();
 				Serial.println("COMMAND UNKNOWN: "+received_string);
 				//Serial.println("COMMAND UNKNOWN");
 				//device_ready = false;
