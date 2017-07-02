@@ -1,5 +1,14 @@
 /* Sticky footer styles
 -------------------------------------------------- */
+@font-face {
+    font-family: 'moonhouseregular';
+    src: url('../fonts/moonhouse-webfont.woff2') format('woff2'),
+         url('../fonts/moonhouse-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
 html {
   position: relative;
   min-height: 100%;
@@ -8,6 +17,19 @@ body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
 }
+
+.heading {
+	display:inline;
+	vertical-align:text-bottom;
+	position:relative;
+	top:40px;
+	font-family:moonhouseregular;
+	font-weight:bold;
+	margin-left:10px;
+	color:#000000;
+	font-size:42px;
+}
+
 .footer {
   position: absolute;
   bottom: 0;
