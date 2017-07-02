@@ -22,14 +22,18 @@ def main():
     heartbeat_thread = Heartbeat(heartbeat_ev)
     
     time.sleep(2)
+    
+    
+    START = '1'
+    shared.comm.send(START)
+    rcv=shared.comm.receive()
+    print(rcv)
        
     with shared.camera:
-        try:                   
+        try:
             receiver_thread.start()
             heartbeat_thread.start()
             
-            START = '1'
-            shared.comm.send(START)
             server = StreamingServer(shared.address, StreamingHandler)
             print('Server started on port ' + str(shared.address[1]))
             server.serve_forever()

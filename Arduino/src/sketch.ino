@@ -57,7 +57,7 @@ void set_motor_powers(signed char left_power, signed char right_power){
     int rp = 256*right_power/100;
 
     int powers[] = {lp, 0, rp, 0};
-	
+
     if (left_power < 0){
         powers[0] = 0;
         powers[1] = -lp;
@@ -66,23 +66,23 @@ void set_motor_powers(signed char left_power, signed char right_power){
         powers[2] = 0;
         powers[3] = -rp;
     }
-   
+
     write_motor_powers(powers, MOTOR_PINS_NUM);
 
 }
 
 void write_motor_powers(int powers[], int pin_number){
-	for(unsigned char i = 0; i < pin_number; i++){
+    for(unsigned char i = 0; i < pin_number; i++){
         analogWrite(MOTOR_PINS[i], powers[i]);
     }
-	
-	/*Serial.print("Written powers: ");
-	for(unsigned char i = 0; i < pin_number; i++){
+
+    /*Serial.print("Written powers: ");
+    for(unsigned char i = 0; i < pin_number; i++){
         Serial.print(String(MOTOR_PINS[i]) + ":" + String(powers[i]) + " ");
     }
-	Serial.println();*/
-	going_forward = powers[0] != 0 && powers[2] != 0 && powers[1] == 0 && powers[3] == 0;
-	motors_running = powers[0] != 0 || powers[1] != 0 || powers[2] != 0 || powers[3] != 0;
+    Serial.println();*/
+    going_forward = powers[0] != 0 && powers[2] != 0 && powers[1] == 0 && powers[3] == 0;
+    motors_running = powers[0] != 0 || powers[1] != 0 || powers[2] != 0 || powers[3] != 0;
 }
 
 void setup() {
@@ -97,16 +97,16 @@ void setup() {
 
     pinMode(DISTANCE_TRIG_PIN, OUTPUT);
     pinMode(DISTANCE_ECHO_PIN, INPUT);
-	
-	pinMode(LIGHTS_PIN, OUTPUT);
-	
-	pinMode(LED_BUILTIN, OUTPUT);
+
+    pinMode(LIGHTS_PIN, OUTPUT);
+
+    pinMode(LED_BUILTIN, OUTPUT);
 
     Serial.begin(9600); // set the baud rate
     ping_timer = millis();
-	//Serial.setTimeout(TIMEOUT);
+    //Serial.setTimeout(TIMEOUT);
     Serial.setTimeout(DEFAULT_TIMEOUT);
-	Serial.println("IN SETUP");
+    Serial.println("IN SETUP");
 }
 
 void echo_check(){
@@ -116,54 +116,54 @@ void echo_check(){
             emergency_stop();
             Serial.println("Stopping motors!");
         }
-		last_distance = String(sonar.ping_result/US_ROUNDTRIP_CM);
+        last_distance = String(sonar.ping_result/US_ROUNDTRIP_CM);
         //send_distance_info(last_distance);
     }
 }
 
 void emergency_stop(){
-	if(motors_running){
-		write_motor_powers(ZERO_POWERS, MOTOR_PINS_NUM);
-	}
+    if(motors_running){
+        write_motor_powers(ZERO_POWERS, MOTOR_PINS_NUM);
+    }
 }
 
 void finish(){
-	emergency_stop();
-	device_ready = false;
-	measure_distance = false;
-	digitalWrite(LED_BUILTIN, LOW);
+    emergency_stop();
+    device_ready = false;
+    measure_distance = false;
+    digitalWrite(LED_BUILTIN, LOW);
 }
 
 void send_distance_info(String info){
     //if(device_ready){
     //    Serial.println("&"+info);
     //}
-	if(going_forward) Serial.println("&"+info);
+    if(going_forward) Serial.println("&"+info);
 }
 
 void loop() {
-	//Serial.println("f..");
+    //Serial.println("f..");
     if (device_ready && (going_forward || measure_distance) && (millis() >= ping_timer)){        
-		ping_timer += ping_speed;
+        ping_timer += ping_speed;
         sonar.ping_timer(echo_check);
     }
 	
-	if (millis() - last_heartbeat > HEARTBEAT_TIMEOUT){
-		emergency_stop();
-		digitalWrite(LED_BUILTIN, LOW);
-		/*digitalWrite(LED_BUILTIN, HIGH);
-		delay(50);
-		digitalWrite(LED_BUILTIN, LOW);
-		delay(50);
-		digitalWrite(LED_BUILTIN, HIGH);
-		delay(50);
-		digitalWrite(LED_BUILTIN, LOW);
-		delay(50);
-		digitalWrite(LED_BUILTIN, HIGH);
-		delay(50);
-		digitalWrite(LED_BUILTIN, LOW);
-		*/
-	}
+    if (millis() - last_heartbeat > HEARTBEAT_TIMEOUT){
+        emergency_stop();
+        digitalWrite(LED_BUILTIN, LOW);
+        /*digitalWrite(LED_BUILTIN, HIGH);
+        delay(50);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(50);
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(50);
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(50);
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(50);
+        digitalWrite(LED_BUILTIN, LOW);
+        */
+    }
 
 	//Serial.println("...");
 	
@@ -171,65 +171,65 @@ void loop() {
         received_string = Serial.readStringUntil('\n'); // read the incoming data
         //Serial.print("Received: ");
         //Serial.println(received_string);
-		//if(device_ready) Serial.println("a");
+        //if(device_ready) Serial.println("a");
         switch(received_string.substring(0, 1).toInt()){
-			case START: {
-				Serial.println("Ready");
-				device_ready = true;
-				break;
-			}
-			case DISTANCE_ON: {
-				Serial.println("Distance on...");
-				measure_distance = true;
-				break;
-			}
-			case GET_DISTANCE: {
-				Serial.println("&" + last_distance);
-				break;
-			}
-			case DISTANCE_OFF: {
-				Serial.println("Distance off...");
-				measure_distance = false;
-				break;
-			}
-			case SET_MOTORS: {
-				signed char left_power, right_power;
-				int first_delimiter = received_string.indexOf(';');
-				int second_delimiter = received_string.indexOf(',');				
-				left_power = received_string.substring(first_delimiter+1, second_delimiter).toInt();
-				right_power = received_string.substring(second_delimiter+1).toInt();
-				set_motor_powers(left_power, right_power);
-				break;
-			}
-			case LIGHTS_ON: {
-				Serial.println("Lights on...");
-				digitalWrite(LIGHTS_PIN, HIGH);
-				break;
-			}
-			case LIGHTS_OFF: {
-				Serial.println("Lights off...");
-				digitalWrite(LIGHTS_PIN, LOW);
-				break;
-			}
-			case HEARTBEAT: {
-				last_heartbeat = millis();				
-				digitalWrite(LED_BUILTIN, off ? HIGH : LOW);
-				off=!off;
-				//Serial.println("Heartbeat received <3");
-				break;
-			}
-			case END:{
-				finish();
-				Serial.println("Bye.");				
-				break;
-			}
-			default: {
-				finish();
-				Serial.println("COMMAND UNKNOWN: "+received_string);
-				//Serial.println("COMMAND UNKNOWN");
-				//device_ready = false;
-				break;
-			}
+            case START: {
+                Serial.println("Ready");
+                device_ready = true;
+                break;
+            }
+            case DISTANCE_ON: {
+                Serial.println("Distance on...");
+                measure_distance = true;
+                break;
+            }
+            case GET_DISTANCE: {
+                Serial.println("&" + last_distance);
+                break;
+            }
+            case DISTANCE_OFF: {
+                Serial.println("Distance off...");
+                measure_distance = false;
+                break;
+            }
+            case SET_MOTORS: {
+                signed char left_power, right_power;
+                int first_delimiter = received_string.indexOf(';');
+                int second_delimiter = received_string.indexOf(',');				
+                left_power = received_string.substring(first_delimiter+1, second_delimiter).toInt();
+                right_power = received_string.substring(second_delimiter+1).toInt();
+                set_motor_powers(left_power, right_power);
+                break;
+            }
+            case LIGHTS_ON: {
+                Serial.println("Lights on...");
+                digitalWrite(LIGHTS_PIN, HIGH);
+                break;
+            }
+            case LIGHTS_OFF: {
+                Serial.println("Lights off...");
+                digitalWrite(LIGHTS_PIN, LOW);
+                break;
+            }
+            case HEARTBEAT: {
+                last_heartbeat = millis();				
+                digitalWrite(LED_BUILTIN, off ? HIGH : LOW);
+                off=!off;
+                //Serial.println("Heartbeat received <3");
+                break;
+            }
+            case END:{
+                finish();
+                Serial.println("Bye.");				
+                break;
+            }
+            default: {
+                finish();
+                Serial.println("COMMAND UNKNOWN: "+received_string);
+                //Serial.println("COMMAND UNKNOWN");
+                //device_ready = false;
+                break;
+            }
         }
     }
 
