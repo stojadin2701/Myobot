@@ -20,7 +20,18 @@ var right_sidebar_opened = false;
 
 var send_distance_request = false;
 
+  
 var last_event = null;
+
+/*var camera_img = $("#camera");
+camera_img.addEventListener("DOMAttrModified", function(event) {
+    console.log('a');
+});*/
+
+var camera_img = document.getElementById('camera');
+camera_img.addEventListener("DOMAttrModified", function(event) {
+    console.log('b');
+})
   
 function xml_http_post(url, data, callback) {
     var req = false;

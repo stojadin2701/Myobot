@@ -2,6 +2,7 @@ import io
 import os
 import logging
 import socketserver
+import time
 
 import shared
 
@@ -14,6 +15,7 @@ from command_executor import CommandExecutor
 class StreamingOutput(object):
     def __init__(self):
         self.frame = None
+        #self.frame_num = 0
         self.buffer = io.BytesIO()
         self.condition = Condition()
 
@@ -21,6 +23,8 @@ class StreamingOutput(object):
         if buf.startswith(b'\xff\xd8'):
             # New frame, copy the existing buffer's content and notify all
             # clients it's available
+            #shared.camera.annotate_text = str(self.frame_num)
+            #self.frame_num += 1
             self.buffer.truncate()
             with self.condition:
                 self.frame = self.buffer.getvalue()
@@ -68,10 +72,20 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
             self.end_headers()
             try:
+                frame_num = 0
+                start = time.time()
+                framerate = '...'
                 while True:
                     with shared.output.condition:
                         shared.output.condition.wait()
                         frame = shared.output.frame
+                    end = time.time()
+                    shared.camera.annotate_text = '                                                                      fps: ' + str(framerate)
+                    if end-start >= 1:
+                        framerate = frame_num-1
+                        start = time.time()
+                        frame_num = 0                    
+                    frame_num += 1
                     self.wfile.write(b'--FRAME\r\n')
                     self.send_header('Content-Type', 'image/jpeg')
                     self.send_header('Content-Length', len(frame))
