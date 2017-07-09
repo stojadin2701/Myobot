@@ -2,16 +2,14 @@ var pose_map = {
 	'fingers_spread':'forward',
 	'fist':'backward',
 	'wave_in':'left',
-	'wave_out':'right',
-	'double_tap':'lights_on'
+	'wave_out':'right'
 }
 
 var key_map = {
 	'w':'forward',
 	's':'backward',
 	'a':'left',
-	'd':'right',
-	'f':'lights_on'
+	'd':'right'
 }
 
 var myo_control = false;
@@ -66,10 +64,11 @@ function distance_handle(req) {
 	document.getElementById("distance_info").innerHTML = req.responseText + " cm";
 }
 
-Myo.connect('test.test.test');
+Myo.connect('myobot');
 
 Myo.on('connected', function(data, timestamp){	
-    console.log("Myo successfully connected. Data: " + JSON.stringify(data) + ". Timestamp: " + timestamp + ".");
+    console.log("Myo successfully connected. Data: " + 
+	JSON.stringify(data) + ". Timestamp: " + timestamp + ".");
     xml_http_post("index.html", 'armband_connected', pose_handle);
     Myo.setLockingPolicy("none");
 })
@@ -93,7 +92,7 @@ Myo.on('arm_unsynced', function(){
 
 Myo.on('pose', function(pose){
     console.log(pose);
-	if(myo_control && (pose in pose_map)) {
+	if(myo_control && (pose in pose_map)){
 		if(pose !== 'double_tap') xml_http_post("index.html", pose_map[pose], pose_handle);
 		if(pose === 'double_tap') $('#light-toggle').bootstrapToggle('toggle');
 	}    
@@ -101,7 +100,7 @@ Myo.on('pose', function(pose){
 
 Myo.on('pose_off', function(pose){
     console.log('end of pose: ' + pose);
-	if(myo_control && (pose in pose_map) && pose!=='double_tap'){
+	if(myo_control && (pose in pose_map)){
 		xml_http_post("index.html", 'stop', pose_handle);
 	}
 });

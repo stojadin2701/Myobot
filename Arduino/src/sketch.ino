@@ -101,8 +101,8 @@ void setup() {
     pinMode(LIGHTS_PIN, OUTPUT);
 
     pinMode(LED_BUILTIN, OUTPUT);
-
-    Serial.begin(9600); // set the baud rate
+    //set the baud rate
+    Serial.begin(9600);
     ping_timer = millis();
     Serial.setTimeout(DEFAULT_TIMEOUT);
     Serial.println("IN SETUP");
@@ -132,18 +132,21 @@ void finish(){
 }
 
 void loop() {
-    if (device_ready && (going_forward || measure_distance) && (millis() >= ping_timer)){        
+    if (device_ready &&
+       (going_forward || measure_distance) &&
+       (millis() >= ping_timer))
+    {        
         ping_timer += ping_speed;
         sonar.ping_timer(echo_check);
     }
 	
     if (millis() - last_heartbeat > HEARTBEAT_TIMEOUT){
-        emergency_stop();
-        digitalWrite(LED_BUILTIN, LOW);
+        finish();
     }
 		
     if(Serial.available()) {
-        received_string = Serial.readStringUntil('\n'); // read the incoming data
+        //read the incoming data
+        received_string = Serial.readStringUntil('\n');
         switch(received_string.substring(0, 1).toInt()){
             case START: {
                 Serial.println("Ready");

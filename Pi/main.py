@@ -21,8 +21,7 @@ def main():
     heartbeat_ev.set()
     heartbeat_thread = Heartbeat(heartbeat_ev)
     
-    time.sleep(2)
-    
+    time.sleep(2)    
     
     START = '1'
     shared.comm.send(START)
@@ -45,9 +44,7 @@ def main():
             END = '9'
             shared.comm.send(END)
             receiver_ev.clear()            
-            receiver_thread.join()
+            receiver_thread.join()      
             
-
 if __name__ == '__main__':
     main()
-
