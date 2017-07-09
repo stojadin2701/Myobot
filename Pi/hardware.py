@@ -31,7 +31,7 @@ class Distance(object):
         shared.comm.send(Distance.DISTANCE_OFF)
         
 class Motors(object):
-    COMMAND = '5'
+    SET_MOTORS = '5'
 
     __instance = None
     
@@ -49,8 +49,8 @@ class Motors(object):
     def set_motor_powers(self, left_power, right_power):
         if left_power < -100 or left_power > 100 or right_power < -100 or right_power > 100:
             raise ValueError('Bad motor power range: ' + str(left_power)+' '+str(right_power))
-        shared.comm.send(Motors.COMMAND+';'+str(left_power)+','+str(right_power))
-        print('Sent: ' + Motors.COMMAND+';'+str(left_power)+','+str(right_power))
+        shared.comm.send(Motors.SET_MOTORS+';'+str(left_power)+','+str(right_power))
+        print('Sent: ' + Motors.SET_MOTORS+';'+str(left_power)+','+str(right_power))
  
     def go(self, left_power, right_power, stop = False, duration = 1):
         self.set_motor_powers(left_power, right_power)

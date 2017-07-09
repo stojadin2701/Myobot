@@ -33,8 +33,6 @@ class CommandExecutor(object):
             'left': self.motors.turn_left,
             'right': self.motors.turn_right,
             'stop': self.motors.stop,
-            'armband_disconnected': self.motors.stop,
-            'armband_unsynced': self.motors.stop,
             'lights_on': self.lights.lights_on,
             'lights_off': self.lights.lights_off,
             'distance_on': self.distance.distance_on,
@@ -50,40 +48,7 @@ class CommandExecutor(object):
             shared.camera.start_recording(shared.output, format = 'mjpeg')
             result = command
         elif command == 'get_distance':
-            result = self.distance.get_distance()
-            #result = shared.receiver_thread.get_last_distance()       
+            result = self.distance.get_distance()    
         else:
-            result = command
-        """
-        elif command == 'stop_stream':
-            shared.camera.stop_recording()
-            result = command
-        """
-        
-        """
-        elif command == 'stop_stream':
-            shared.camera.stop_recording()
-            result = None
-        elif command == 'forward':
-            result = 'going forward'
-            Motors.go_forward()
-        elif command == 'backward':
-            result = 'going backward'
-            Motors.go_backward()
-        elif command == 'left':
-            result = 'turning left'
-            Motors.turn_left()
-        elif command == 'right':
-            result = 'turning right'
-            Motors.turn_right()
-        elif command == 'stop':
-            result = 'stopping'
-            Motors.stop()
-        elif command == 'distance_request':
-            result = shared.receiver_thread.get_last_distance()
-        else:
-            #Motors.stop()
-            result = command
-        """
-        
+            result = command        
         return result

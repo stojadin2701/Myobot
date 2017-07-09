@@ -15,16 +15,11 @@ from command_executor import CommandExecutor
 class StreamingOutput(object):
     def __init__(self):
         self.frame = None
-        #self.frame_num = 0
         self.buffer = io.BytesIO()
         self.condition = Condition()
 
     def write(self, buf):
         if buf.startswith(b'\xff\xd8'):
-            # New frame, copy the existing buffer's content and notify all
-            # clients it's available
-            #shared.camera.annotate_text = str(self.frame_num)
-            #self.frame_num += 1
             self.buffer.truncate()
             with self.condition:
                 self.frame = self.buffer.getvalue()
@@ -80,7 +75,7 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                         shared.output.condition.wait()
                         frame = shared.output.frame
                     end = time.time()
-                    shared.camera.annotate_text = '                                                                      fps: ' + str(framerate)
+                    shared.camera.annotate_text = 'fps: ' + str(framerate)
                     if end-start >= 1:
                         framerate = frame_num-1
                         start = time.time()

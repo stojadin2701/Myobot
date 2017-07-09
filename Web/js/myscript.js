@@ -20,19 +20,10 @@ var right_sidebar_opened = false;
 
 var send_distance_request = false;
 
+var streaming_on = false;
   
 var last_event = null;
 
-/*var camera_img = $("#camera");
-camera_img.addEventListener("DOMAttrModified", function(event) {
-    console.log('a');
-});*/
-
-var camera_img = document.getElementById('camera');
-camera_img.addEventListener("DOMAttrModified", function(event) {
-    console.log('b');
-})
-  
 function xml_http_post(url, data, callback) {
     var req = false;
     try {
@@ -73,18 +64,7 @@ function on_off_distance_handle(req) {
 
 function distance_handle(req) {
 	document.getElementById("distance_info").innerHTML = req.responseText + " cm";
-    //$('#distance_info').html = req.responseText + " cm";
 }
-
-/*$('#start_stream').on('click', function(event) {
-    console.log("Start stream clicked...");
-    xml_http_post("index.html", 'Start stream', pose_handle);
-});
-
-$('#stop_stream').on('click', function(event) {
-    console.log("Stop stream clicked...");
-    xml_http_post("index.html", 'Stop stream', pose_handle);
-});*/
 
 Myo.connect('test.test.test');
 
@@ -98,19 +78,17 @@ Myo.on('disconnected', function(){
 	$('#input-toggle').bootstrapToggle('on');
 	$('#input-toggle').bootstrapToggle('disable');
     console.log("Myo disconnected.");
-    xml_http_post("index.html", 'armband_disconnected', pose_handle);
 	xml_http_post("index.html", 'stop', pose_handle);
 })
 
 Myo.on('arm_synced', function(){
 	$('#input-toggle').bootstrapToggle('enable');
-	xml_http_post("index.html", 'armband_synced', pose_handle);
 });
 
 Myo.on('arm_unsynced', function(){
 	$('#input-toggle').bootstrapToggle('on');
 	$('#input-toggle').bootstrapToggle('disable');
-	xml_http_post("index.html", 'armband_unsynced', pose_handle);
+	xml_http_post("index.html", 'stop', pose_handle);
 });
 
 Myo.on('pose', function(pose){
@@ -122,7 +100,7 @@ Myo.on('pose', function(pose){
 })
 
 Myo.on('pose_off', function(pose){
-    console.log('kraj poze' + pose);
+    console.log('end of pose: ' + pose);
 	if(myo_control && (pose in pose_map) && pose!=='double_tap'){
 		xml_http_post("index.html", 'stop', pose_handle);
 	}
@@ -131,13 +109,12 @@ Myo.on('pose_off', function(pose){
 Myo.on('locked', function(){
 	$('#input-toggle').bootstrapToggle('on');
 	$('#input-toggle').bootstrapToggle('disable');
-    console.log('myo zakljucan');	
-    xml_http_post("index.html", 'armband_locked', pose_handle);
+    console.log('myo locked');	
+    xml_http_post("index.html", 'stop', pose_handle);
 });
 
 Myo.on('unlocked', function(){
-    console.log('myo otkljucan');
-    xml_http_post("index.html", 'armband_unlocked', pose_handle);
+    console.log('myo unlocked');
 });
 
 $('#start_stream').on('click', function(event) {
@@ -146,6 +123,7 @@ $('#start_stream').on('click', function(event) {
     $('#stop_stream').show();
     console.log("Start stream clicked...")
     xml_http_post("index.html", 'start_stream', pose_handle);
+	streaming_on = true;
 });
 
 $('#stop_stream').on('click', function(event) {
@@ -154,29 +132,8 @@ $('#stop_stream').on('click', function(event) {
     $('#start_stream').show();
     console.log("Stop stream clicked...")
     xml_http_post("index.html", 'stop_stream', pose_handle);
+	streaming_on = false;
 });
-
-$(function() {   
-	
-	
-	/*
-	$('#input-toggle-two').bootstrapToggle({
-      on: 'Keyboard',
-      off: 'Myo'
-    });
-	*/
-})
-
-/*
-$(function() {
-    var $checkbox = '<input type="checkbox" checked="checked" data-toggle="toggle" data-on="Keyboard" data-off="Myo" data-onstyle="warning" data-offstyle="info" />'
-    $('.toggle-placeholder').html($checkbox);
-    $('.toggle-placeholder').find('input[type=checkbox][data-toggle=toggle]')
-                            .each(function(){
-        $(this).bootstrapToggle();
-    });
-});
-*/
 
 $(document).ready(function () {
 	$('#left_sidebar').BootSideMenu({
@@ -258,7 +215,21 @@ document.addEventListener('keyup', (event) => {
 			}
 			break;
 		case 'v':
-			
+			if(!streaming_on){
+				$('#start_stream').hide();
+				$('#camera').show();
+				$('#stop_stream').show();
+				console.log("Start stream clicked...")
+				xml_http_post("index.html", 'start_stream', pose_handle);
+				streaming_on = true;
+			} else{
+				$('#stop_stream').hide();
+				$('#camera').hide();
+				$('#start_stream').show();
+				console.log("Stop stream clicked...")
+				xml_http_post("index.html", 'stop_stream', pose_handle);
+				streaming_on = false;
+			}
 			break;
 		case 'j':
 			$('#left_sidebar').find(".toggler").trigger("click");
@@ -269,7 +240,6 @@ document.addEventListener('keyup', (event) => {
 	}
 	
 }, false);
-
 
 document.addEventListener('keydown', (event) => {
 	if(last_event && last_event.key === event.key) return;
@@ -294,14 +264,6 @@ document.addEventListener('keydown', (event) => {
 		}
 	}
 }, false);
-
-
-/*window.setInterval(function(){
-	if(right_sidebar_opened == true && $('#distance_list').attr('aria-expanded') == "true"){
-		console.log("Requesting distance");
-		xml_http_post("index.html", 'distance_request', distance_handle);
-	}
-}, 500);*/
 
 window.setInterval(function(){
 	if(send_distance_request){

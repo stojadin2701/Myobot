@@ -104,20 +104,17 @@ void setup() {
 
     Serial.begin(9600); // set the baud rate
     ping_timer = millis();
-    //Serial.setTimeout(TIMEOUT);
     Serial.setTimeout(DEFAULT_TIMEOUT);
     Serial.println("IN SETUP");
 }
 
 void echo_check(){
-    //mozda i ovde going_forward &&
     if(sonar.check_timer()){
         if(going_forward && sonar.ping_result/US_ROUNDTRIP_CM < 25) {
             emergency_stop();
             Serial.println("Stopping motors!");
         }
         last_distance = String(sonar.ping_result/US_ROUNDTRIP_CM);
-        //send_distance_info(last_distance);
     }
 }
 
@@ -134,15 +131,7 @@ void finish(){
     digitalWrite(LED_BUILTIN, LOW);
 }
 
-void send_distance_info(String info){
-    //if(device_ready){
-    //    Serial.println("&"+info);
-    //}
-    if(going_forward) Serial.println("&"+info);
-}
-
 void loop() {
-    //Serial.println("f..");
     if (device_ready && (going_forward || measure_distance) && (millis() >= ping_timer)){        
         ping_timer += ping_speed;
         sonar.ping_timer(echo_check);
@@ -151,27 +140,10 @@ void loop() {
     if (millis() - last_heartbeat > HEARTBEAT_TIMEOUT){
         emergency_stop();
         digitalWrite(LED_BUILTIN, LOW);
-        /*digitalWrite(LED_BUILTIN, HIGH);
-        delay(50);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(50);
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(50);
-        digitalWrite(LED_BUILTIN, LOW);
-        delay(50);
-        digitalWrite(LED_BUILTIN, HIGH);
-        delay(50);
-        digitalWrite(LED_BUILTIN, LOW);
-        */
     }
-
-	//Serial.println("...");
-	
+		
     if(Serial.available()) {
         received_string = Serial.readStringUntil('\n'); // read the incoming data
-        //Serial.print("Received: ");
-        //Serial.println(received_string);
-        //if(device_ready) Serial.println("a");
         switch(received_string.substring(0, 1).toInt()){
             case START: {
                 Serial.println("Ready");
@@ -215,7 +187,6 @@ void loop() {
                 last_heartbeat = millis();				
                 digitalWrite(LED_BUILTIN, off ? HIGH : LOW);
                 off=!off;
-                //Serial.println("Heartbeat received <3");
                 break;
             }
             case END:{
@@ -226,8 +197,6 @@ void loop() {
             default: {
                 finish();
                 Serial.println("COMMAND UNKNOWN: "+received_string);
-                //Serial.println("COMMAND UNKNOWN");
-                //device_ready = false;
                 break;
             }
         }

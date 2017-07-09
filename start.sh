@@ -5,7 +5,10 @@ u_appeared=false
 check_u_flag() {
     if [ "$u_appeared" = false ]
 		then 
-			./upload.sh
+			cd Arduino
+			ino build
+			ino upload
+			cd ..
 			u_appeared=true
 		else return
 	fi	
